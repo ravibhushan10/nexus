@@ -1,0 +1,238 @@
+/* ── Overlay & Modal shell ─────────────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 32px 28px;
+  width: 100%; max-width: 420px;
+  max-height: 90vh; overflow-y: auto;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  animation: modalIn .22s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(.94) translateY(12px); }
+  to   { opacity: 1; transform: scale(1)  translateY(0); }
+}
+
+/* ── Logo ──────────────────────────────────────────────────────────────── */
+.logoRow {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 24px;
+}
+.logoBox {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--purple), #6b3fd4);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 17px;
+}
+.logoText {
+  font-weight: 700; font-size: 17px;
+  color: var(--text-primary); letter-spacing: -.3px;
+}
+
+/* ── Close button ──────────────────────────────────────────────────────── */
+.closeBtn {
+  position: absolute; top: 14px; right: 16px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted); font-size: 16px; line-height: 1;
+  padding: 4px; border-radius: 4px;
+  transition: color .15s;
+}
+.closeBtn:hover { color: var(--text-primary); }
+
+/* ── Title & subtitle ──────────────────────────────────────────────────── */
+.title {
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--text-primary); margin: 0 0 4px;
+}
+.subtitle {
+  font-size: .86rem; color: var(--text-secondary);
+  margin: 0 0 22px; line-height: 1.5;
+}
+
+/* ── Form fields ───────────────────────────────────────────────────────── */
+.field {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-bottom: 14px;
+}
+.field label {
+  font-size: .72rem; font-weight: 700;
+  color: var(--text-muted); letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.required { color: var(--red); margin-left: 2px; }
+.inputError {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px rgba(255,92,92,.1) !important;
+}
+.fieldHintError { font-size: .73rem; color: var(--red); margin: 3px 0 0; }
+
+/* ── Password field ────────────────────────────────────────────────────── */
+.pwdWrap { position: relative; }
+.pwdWrap .input-field { padding-right: 44px; width: 100%; }
+.eyeBtn {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); transition: color .15s;
+}
+.eyeBtn:hover { color: var(--text-primary); }
+.forgotLink {
+  background: none; border: none; cursor: pointer;
+  font-size: .76rem; color: var(--text-muted); padding: 0;
+  margin-top: 4px; text-align: right; align-self: flex-end;
+  transition: color .15s;
+}
+.forgotLink:hover { color: var(--purple); }
+
+/* ── Password checklist ────────────────────────────────────────────────── */
+.checklist {
+  list-style: none; margin: 10px 0 0; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 5px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+}
+.checklist li { display: flex; align-items: center; gap: 7px; font-size: .74rem; transition: color .2s; }
+.checkMet   { color: var(--green); }
+.checkUnmet { color: var(--text-muted); }
+.checkFail  { color: var(--red); }
+.checkDot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0; margin-left: 3px;
+}
+
+/* ── Submit button ─────────────────────────────────────────────────────── */
+.submitBtn {
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg, var(--purple), #6b3fd4);
+  color: #fff; border: none; border-radius: var(--r-md);
+  font-weight: 700; font-size: .9rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .15s, transform .1s;
+  margin-top: 8px;
+}
+.submitBtn:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+.submitBtn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ── Spinner ───────────────────────────────────────────────────────────── */
+.spinner {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  animation: spin .6s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Social buttons ────────────────────────────────────────────────────── */
+.socialBtn {
+  width: 100%; padding: 11px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  color: var(--text-primary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-size: .875rem; font-weight: 500;
+  transition: background .15s, border-color .15s;
+  margin-bottom: 8px;
+}
+.socialBtn:hover { background: var(--bg-hover); border-color: var(--border-light); }
+
+/* ── Or divider ────────────────────────────────────────────────────────── */
+.orDivider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 16px 0; color: var(--text-muted); font-size: .76rem;
+}
+.orDivider::before, .orDivider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── Banners ───────────────────────────────────────────────────────────── */
+.banner {
+  border-radius: var(--r-sm); padding: 11px 14px;
+  margin-bottom: 12px; font-size: .83rem; line-height: 1.55;
+}
+.bannerMsg { margin: 0 0 2px; color: inherit; }
+.bannerError {
+  background: rgba(255,92,92,.06); border: 1px solid rgba(255,92,92,.2);
+  border-left: 3px solid var(--red); color: #ff7878;
+}
+.bannerWarning {
+  background: rgba(255,159,67,.06); border: 1px solid rgba(255,159,67,.2);
+  border-left: 3px solid var(--orange); color: var(--orange);
+}
+.bannerSuccess {
+  background: rgba(0,208,132,.07); border: 1px solid rgba(0,208,132,.2);
+  border-left: 3px solid var(--green); color: var(--green);
+}
+.hintBtn {
+  display: inline-block; background: none; border: none; cursor: pointer;
+  font-size: .79rem; font-weight: 700; color: inherit; padding: 0;
+  margin-top: 6px; text-decoration: underline; text-underline-offset: 2px;
+  opacity: .9; transition: opacity .15s;
+}
+.hintBtn:hover { opacity: 1; }
+
+/* ── Switch / back buttons ─────────────────────────────────────────────── */
+.switchText { text-align: center; margin-top: 16px; font-size: .83rem; color: var(--text-secondary); }
+.switchBtn {
+  background: none; border: none; color: var(--purple);
+  cursor: pointer; font-size: inherit; padding: 0; font-weight: 600;
+  transition: opacity .15s;
+}
+.switchBtn:hover { opacity: .8; }
+.backBtn {
+  background: none; border: none; cursor: pointer;
+  font-size: .8rem; color: var(--text-muted); padding: 0;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: color .15s; font-weight: 500;
+}
+.backBtn:hover { color: var(--text-primary); }
+
+/* ── OTP ───────────────────────────────────────────────────────────────── */
+.otpRow {
+  display: flex; gap: 10px; justify-content: center; margin: 8px 0 4px;
+}
+.otpBox {
+  width: 48px; height: 56px; text-align: center;
+  font-weight: 800; font-family: var(--font-mono);
+  border-radius: var(--r-sm); border: 1.5px solid var(--border);
+  background: var(--bg-secondary); color: var(--text-primary);
+  caret-color: var(--purple); transition: border-color .15s, box-shadow .15s;
+  outline: none; font-size: 1.4rem;
+}
+.otpBox:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(157,111,255,.12);
+}
+.otpBoxError {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px rgba(255,92,92,.08) !important;
+}
+
+/* ── Success icon ──────────────────────────────────────────────────────── */
+.successIcon {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: rgba(0,208,132,.1); border: 1px solid rgba(0,208,132,.2);
+  box-shadow: 0 0 24px rgba(0,208,132,.1); color: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .modal { padding: 24px 18px; }
+  .otpBox { width: 40px; height: 48px; font-size: 1.2rem; }
+  .otpRow { gap: 7px; }
+}
