@@ -9,6 +9,7 @@ import Chat      from './pages/Chat'
 import Upgrade   from './pages/Upgrade'
 import Analytics from './pages/Analytics'
 import Settings  from './pages/Settings'
+import SharedChat from './pages/SharedChat'
 import Help      from './pages/Help'
 
 function PrivateRoute({ children }) {
@@ -82,6 +83,7 @@ export default function App() {
             <Route path="/settings"  element={<PrivateRoute><Settings /></PrivateRoute>} />
             <Route path="/help"      element={<PrivateRoute><Help /></PrivateRoute>} />
             <Route path="*"          element={<Navigate to="/chat" replace />} />
+            <Route path="/share/:token" element={<SharedChat />} />
           </Routes>
         </SidebarProvider>
       </AuthProvider>

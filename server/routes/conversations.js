@@ -7,7 +7,7 @@ const Conversation = require('../models/Conversation')
 router.get('/', protect, async (req, res) => {
   try {
     const conversations = await Conversation.find({ userId: req.user._id, isDeleted: false })
-      .select('title model createdAt updatedAt totalTokens totalCost isPinned features folder systemPrompt')
+      .select('title model createdAt updatedAt totalTokens totalCost isPinned features folder systemPrompt isPublic shareToken')
       .sort({ isPinned: -1, updatedAt: -1 })
       .limit(200)
     res.json({ conversations })
@@ -26,6 +26,73 @@ router.get('/:id', protect, async (req, res) => {
     })
     if (!conversation) return res.status(404).json({ message: 'Conversation not found' })
     res.json({ conversation })
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+// ── PUBLIC share endpoint — NO auth required ──────────────────────────────────
+// GET /api/share/:shareToken
+router.get('/public/:shareToken', async (req, res) => {
+  try {
+    const conversation = await Conversation.findOne({
+      shareToken: req.params.shareToken,
+      isPublic:   true,
+      isDeleted:  false,
+    }).select('title messages createdAt updatedAt')  // never expose userId or cost
+
+    if (!conversation) return res.status(404).json({ message: 'Conversation not found or link disabled.' })
+
+    res.json({
+      conversation: {
+        _id:       conversation._id,
+        title:     conversation.title,
+        messages:  conversation.messages,
+        createdAt: conversation.createdAt,
+        updatedAt: conversation.updatedAt,
+      }
+    })
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+// ── Enable sharing — generates token if not present ──────────────────────────
+// POST /api/conversations/:id/share
+router.post('/:id/share', protect, async (req, res) => {
+  try {
+    const conversation = await Conversation.findOne({
+      _id:       req.params.id,
+      userId:    req.user._id,
+      isDeleted: false,
+    })
+    if (!conversation) return res.status(404).json({ message: 'Not found' })
+
+    // Re-use existing token if already shared
+    if (!conversation.shareToken) {
+      conversation.generateShareToken()
+    } else {
+      conversation.isPublic = true
+    }
+
+    await conversation.save()
+    res.json({ shareToken: conversation.shareToken, isPublic: conversation.isPublic })
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+// ── Disable sharing — keeps token in DB but sets isPublic = false ─────────────
+// POST /api/conversations/:id/unshare
+router.post('/:id/unshare', protect, async (req, res) => {
+  try {
+    const conversation = await Conversation.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user._id },
+      { isPublic: false, shareToken: null },
+      { new: true }
+    )
+    if (!conversation) return res.status(404).json({ message: 'Not found' })
+    res.json({ isPublic: false })
   } catch (err) {
     res.status(500).json({ message: 'Server error' })
   }

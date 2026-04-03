@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { Spinner } from '../components/ui/Spinner'
 import { useSidebar } from '../context/SidebarContext'
 
+
 const TABS = [
   { id: 'profile',      label: 'Profile' },
   { id: 'systemprompt', label: 'System Prompt' },

@@ -47,6 +47,32 @@ app.use('/api/auth/register', authLimiter)
 // Routes
 app.use('/api/auth',          require('./routes/auth'))
 app.use('/api/chat',          require('./routes/chat'))
+// Add this BEFORE app.use('/api/conversations', ...)
+const Conversation = require('./models/Conversation')
+
+app.get('/api/share/:shareToken', async (req, res) => {
+  try {
+    const conversation = await Conversation.findOne({
+      shareToken: req.params.shareToken,
+      isPublic:   true,
+      isDeleted:  false,
+    }).select('title messages createdAt updatedAt')
+
+    if (!conversation) return res.status(404).json({ message: 'Conversation not found or link disabled.' })
+
+    res.json({
+      conversation: {
+        _id:       conversation._id,
+        title:     conversation.title,
+        messages:  conversation.messages,
+        createdAt: conversation.createdAt,
+        updatedAt: conversation.updatedAt,
+      }
+    })
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
 app.use('/api/conversations', require('./routes/conversations'))
 app.use('/api/payment',       require('./routes/payment'))
 app.use('/api/analytics',     require('./routes/analytics'))

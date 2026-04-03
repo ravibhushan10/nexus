@@ -95,8 +95,11 @@ router.post('/send', protect, async (req, res) => {
       || DEFAULT_SYSTEM
 
     if (user.language === 'hi') {
-      sysContent += '\n\nThe user prefers Hindi. Respond in the same language the user writes in.'
-    }
+  sysContent += '\n\nThe user prefers Hindi. Respond in Hindi unless the user writes in English.'
+}
+if (user.language === 'pa') {
+  sysContent += '\n\nThe user prefers Punjabi. Respond in Punjabi unless the user writes in English.'
+}
 
     if (memoryEnabled && user.memory?.length > 0) {
       const memLines = user.memory.map(m => `${m.key}: ${m.value}`).join('\n')

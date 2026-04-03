@@ -251,20 +251,25 @@ const Sidebar = forwardRef(function Sidebar(
         )}
 
         {/* Avatar with tooltip */}
-        <CollapsedBtn
-          onClick={e => { e.stopPropagation(); setProfileOpen(p => !p) }}
-          tooltip={'Profile' || 'Profile'}
-          style={{
-            width: 32, height: 32,
-            borderRadius: '50%',
-            background: 'var(--green-dim)',
-            border: '1px solid rgba(0,208,132,0.3)',
-            color: 'var(--green)',
-            fontWeight: 700, fontSize: '0.8rem',
-          }}
-        >
-          {user?.name?.[0]?.toUpperCase()}
-        </CollapsedBtn>
+       <CollapsedBtn
+  onClick={e => { e.stopPropagation(); setProfileOpen(p => !p) }}
+  tooltip="Profile"
+  style={{
+    width: 32, height: 32,
+    borderRadius: '50%',
+    background: 'var(--green-dim)',
+    border: '1px solid rgba(0,208,132,0.3)',
+    color: 'var(--green)',
+    fontWeight: 700, fontSize: '0.8rem',
+    overflow: 'hidden',
+    padding: 0,
+  }}
+>
+  {user?.avatar
+    ? <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${user.avatar}`} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+    : user?.name?.[0]?.toUpperCase()
+  }
+</CollapsedBtn>
       </aside>
     )
   }
@@ -397,7 +402,7 @@ const Sidebar = forwardRef(function Sidebar(
               <div style={{ padding: 6 }}>
                 {[
                   { icon: Settings,   label: 'Settings', action: () => { navigate('/settings'); setProfileOpen(false) } },
-                  { icon: Globe, label: 'Language', action: () => { toast('🌐 Language settings coming soon!', { icon: '🌐' }); setProfileOpen(false) } },
+
                   { icon: HelpCircle, label: 'Help', action: () => { navigate('/help'); setProfileOpen(false) } },
                 ].map(({ icon: Icon, label: lbl, action }) => (
                   <button key={lbl} onClick={action}
@@ -428,9 +433,12 @@ const Sidebar = forwardRef(function Sidebar(
             onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}
             onMouseLeave={e => e.currentTarget.style.background = 'none'}
           >
-            <div style={{ width: 42, height: 42, borderRadius: '50%', background: 'var(--green-dim)', border: '1px solid rgba(0,208,132,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green)', fontWeight: 700, fontSize: '1.3rem', flexShrink: 0 }}>
-              {user?.name?.[0]?.toUpperCase()}
-            </div>
+           <div style={{ width: 42, height: 42, borderRadius: '50%', background: 'var(--green-dim)', border: '1px solid rgba(0,208,132,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green)', fontWeight: 700, fontSize: '1.3rem', flexShrink: 0, overflow: 'hidden' }}>
+  {user?.avatar
+    ? <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${user.avatar}`} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    : user?.name?.[0]?.toUpperCase()
+  }
+</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontSize: '1rem', color: 'var(--text-primary)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</p>
               {user?.plan === 'pro'

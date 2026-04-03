@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const crypto   = require('crypto')
 
 const messageSchema = new mongoose.Schema({
   role:    { type: String, enum: ['user', 'assistant', 'system'], required: true },
@@ -17,8 +18,8 @@ const messageSchema = new mongoose.Schema({
 const conversationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   title:  { type: String, default: 'New Conversation' },
-  model:  { type: String, default: 'llama3-8b-8192' }, // Fixed: was 'gpt-4o'
-  systemPrompt: { type: String, default: '' },         // New: per-conversation system prompt
+  model:  { type: String, default: 'llama3-8b-8192' },
+  systemPrompt: { type: String, default: '' },
   messages: [messageSchema],
   features: {
     ragEnabled:    { type: Boolean, default: false },
@@ -28,7 +29,12 @@ const conversationSchema = new mongoose.Schema({
   totalCost:   { type: Number, default: 0 },
   isPinned:    { type: Boolean, default: false },
   isDeleted:   { type: Boolean, default: false },
-  folder:      { type: String, default: '' },          // New: folder/tag support
+  folder:      { type: String, default: '' },
+
+  // ── Share fields ────────────────────────────────────────────────────────
+  isPublic:   { type: Boolean, default: false },
+  shareToken: { type: String,  default: null, index: true, sparse: true },
+
 }, { timestamps: true })
 
 conversationSchema.methods.generateTitle = function () {
@@ -36,6 +42,13 @@ conversationSchema.methods.generateTitle = function () {
   if (firstUser) {
     this.title = firstUser.content.slice(0, 60) + (firstUser.content.length > 60 ? '…' : '')
   }
+}
+
+// Generate a cryptographically random share token
+conversationSchema.methods.generateShareToken = function () {
+  this.shareToken = crypto.randomBytes(24).toString('hex')
+  this.isPublic   = true
+  return this.shareToken
 }
 
 module.exports = mongoose.model('Conversation', conversationSchema)
