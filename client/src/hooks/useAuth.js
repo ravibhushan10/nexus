@@ -80,13 +80,6 @@ export function useOAuth() {
       result.user?.reloadUserInfo?.email ||
       null
 
-    console.log('All user data:', JSON.stringify({
-      email:          u.email,
-      providerEmails: u.providerData?.map(p => p.email),
-      tokenEmail:     result._tokenResponse?.email,
-      reloadEmail:    u.reloadUserInfo?.email,
-    }))
-
     if (!email) {
       const e = new Error('No email found on your Google account.')
       e.friendlyMessage = e.message

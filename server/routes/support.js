@@ -52,7 +52,6 @@ router.post('/contact', async (req, res) => {
   }
 })
 
-console.log('SUPPORT_EMAIL:', process.env.SUPPORT_EMAIL)
-console.log('GMAIL_USER:', process.env.GMAIL_USER)
+
 
 module.exports = router
