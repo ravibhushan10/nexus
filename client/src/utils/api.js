@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${BASE_URL}/api`,
   withCredentials: false,
 })
 
@@ -36,7 +38,6 @@ api.interceptors.response.use(
       !original._retry
     ) {
       if (isRefreshing) {
-        // Queue this request until refresh completes
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
         }).then(token => {
@@ -52,19 +53,18 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken')
         if (!refreshToken) throw new Error('No refresh token')
 
-        const { data } = await axios.post('/api/auth/refresh', { refreshToken })
+        const { data } = await axios.post(`${BASE_URL}/api/auth/refresh`, { refreshToken })
         localStorage.setItem('accessToken',  data.accessToken)
         localStorage.setItem('refreshToken', data.refreshToken)
 
-        api.defaults.headers.Authorization        = `Bearer ${data.accessToken}`
-        original.headers.Authorization             = `Bearer ${data.accessToken}`
+        api.defaults.headers.Authorization  = `Bearer ${data.accessToken}`
+        original.headers.Authorization      = `Bearer ${data.accessToken}`
 
         processQueue(null, data.accessToken)
         return api(original)
       } catch (refreshError) {
         processQueue(refreshError, null)
         localStorage.clear()
-        // Only redirect if not already on auth pages
         if (!window.location.pathname.startsWith('/login')) {
           window.location.href = '/login'
         }
