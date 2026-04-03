@@ -2,13 +2,29 @@ const express    = require('express')
 const router     = express.Router()
 const nodemailer = require('nodemailer')
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
-  },
-})
+function getTransport() {
+  if (process.env.RESEND_API_KEY) {
+    return nodemailer.createTransport({
+      host:   'smtp.resend.com',
+      port:   465,
+      secure: true,
+      auth:   { user: 'resend', pass: process.env.RESEND_API_KEY },
+    })
+  }
+  if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth:    { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
+    })
+  }
+  return null
+}
+
+function getFrom() {
+  if (process.env.EMAIL_FROM) return process.env.EMAIL_FROM
+  if (process.env.GMAIL_USER) return `NexusAI <${process.env.GMAIL_USER}>`
+  return 'NexusAI <noreply@codeforgeai.in>'
+}
 
 router.post('/contact', async (req, res) => {
   const { name, email, category, subject, message } = req.body
@@ -16,9 +32,15 @@ router.post('/contact', async (req, res) => {
   if (!name || !email || !subject || !message)
     return res.status(400).json({ message: 'All fields are required' })
 
+  const transport = getTransport()
+  if (!transport) {
+    console.error('No email transport configured')
+    return res.status(500).json({ message: 'Email service not configured' })
+  }
+
   try {
-    await transporter.sendMail({
-      from:    `"NexusAI Support" <${process.env.GMAIL_USER}>`,
+    await transport.sendMail({
+      from:    getFrom(),
       to:      process.env.SUPPORT_EMAIL,
       replyTo: email,
       subject: `[${category || 'General'}] ${subject}`,
@@ -51,7 +73,5 @@ router.post('/contact', async (req, res) => {
     res.status(500).json({ message: 'Failed to send message' })
   }
 })
-
-
 
 module.exports = router
