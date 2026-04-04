@@ -9,7 +9,6 @@ import styles from './AuthModals.module.css'
 const OTP_EXPIRY_SECS  = 2 * 60   // 2 minutes
 const OTP_MAX_ATTEMPTS = 2         // show 1 attempt remaining after 1st wrong, lock after 2nd
 
-// ── Entry point ──────────────────────────────────────────────────────────────
 export default function AuthModals({
   showLogin, onCloseLogin,
   showRegister, onCloseRegister,
@@ -17,8 +16,12 @@ export default function AuthModals({
 }) {
   return (
     <>
-      {showLogin    && <LoginModal    onClose={onCloseLogin}    onSwitch={onSwitchToRegister} />}
-      {showRegister && <RegisterModal onClose={onCloseRegister} onSwitch={onSwitchToLogin}    />}
+      <div style={{ display: showLogin ? 'block' : 'none' }}>
+        <LoginModal onClose={onCloseLogin} onSwitch={onSwitchToRegister} />
+      </div>
+      <div style={{ display: showRegister ? 'block' : 'none' }}>
+        <RegisterModal onClose={onCloseRegister} onSwitch={onSwitchToLogin} />
+      </div>
     </>
   )
 }
