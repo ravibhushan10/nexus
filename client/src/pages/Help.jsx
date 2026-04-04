@@ -200,7 +200,7 @@ const borderColor = (field) => {
                     We'll get back to you at <strong style={{ color: 'var(--green)' }}>{form.email}</strong> within 24 hours.
                   </p>
                   <button
-                    onClick={() => { setSent(false); setForm({ name: '', email: '', category: 'General', subject: '', message: '' }); setError({ field: '', msg: '' });setTouched({})}}
+                    onClick={() => { setSent(false); setForm({ name: '', email: '', category: 'General', subject: '', message: '' }); setError({ field: '', msg: '' })}}
                     className="btn btn-ghost"
                   >
                     Send another message

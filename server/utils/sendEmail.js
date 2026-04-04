@@ -1,72 +1,47 @@
-const nodemailer = require('nodemailer')
-
 // ── DEV MODE: logs OTP to console instead of sending email ────────────────────
-// Set EMAIL_DEV_MODE=true in .env to skip email entirely during development
 const DEV_MODE = process.env.EMAIL_DEV_MODE === 'true'
 
-// ── Transport factory ─────────────────────────────────────────────────────────
-// Priority: Resend (production) → Gmail (development) → console fallback
-function getTransport() {
-  // Option 1: Resend — production, needs a verified domain at resend.com/domains
-  if (process.env.RESEND_API_KEY) {
-    return nodemailer.createTransport({
-      host:   'smtp.resend.com',
-      port:   465,
-      secure: true,
-      auth:   { user: 'resend', pass: process.env.RESEND_API_KEY },
-    })
-  }
-
-  // Option 2: Gmail — development, requires an App Password (NOT your real password)
-  // How to get: Google Account → Security → 2-Step Verification → App passwords → Create
-  if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-    return nodemailer.createTransport({
-      host:   'smtp.gmail.com',
-      port:   587,
-      secure: false,
-      auth:   { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
-      tls:    { rejectUnauthorized: false },
-    })
-  }
-
-  // Option 3: No config — will fall through to console logging
-  return null
-}
-
-// ── FROM address ──────────────────────────────────────────────────────────────
-// - Gmail:  must be your Gmail address  →  NexusAI <yourname@gmail.com>
-// - Resend: must match your verified domain → NexusAI <noreply@yourdomain.com>
-function getFrom() {
-  if (process.env.EMAIL_FROM) return process.env.EMAIL_FROM
-  if (process.env.GMAIL_USER) return `NexusAI <${process.env.GMAIL_USER}>`
-  return 'NexusAI <noreply@nexusai.app>'
-}
-
-// ── Safe send ─────────────────────────────────────────────────────────────────
+// ── Safe send via Resend HTTP API ─────────────────────────────────────────────
 async function safeSend(mailOptions, label, otp) {
-  const transport = getTransport()
-
-  try {
-    await transport.sendMail({ ...mailOptions, from: getFrom() })
-    console.log(`[EMAIL] ${label} sent to ${mailOptions.to}`)
-  } catch (err) {
-    console.error(`[EMAIL] FULL ERROR:`, JSON.stringify(err, null, 2)) // ← change this line
-    throw err
-  }
-  // Console fallback: DEV_MODE enabled OR no transport configured
-  if (DEV_MODE || !transport) {
-    console.log(`\n[EMAIL ${DEV_MODE ? 'DEV MODE' : 'NO CONFIG'}] ${label}`)
+  // Console fallback: DEV_MODE enabled
+  if (DEV_MODE) {
+    console.log(`\n[EMAIL DEV MODE] ${label}`)
     console.log(`   To:      ${mailOptions.to}`)
     if (otp) console.log(`   OTP:     \x1b[33m${otp}\x1b[0m  ← use this code`)
     console.log(`   Subject: ${mailOptions.subject}\n`)
     return
   }
 
+  if (!process.env.RESEND_API_KEY) {
+    console.warn(`[EMAIL] RESEND_API_KEY not set — skipping ${label}`)
+    return
+  }
+
   try {
-    await transport.sendMail({ ...mailOptions, from: getFrom() })
-    console.log(`[EMAIL] ${label} sent to ${mailOptions.to}`)
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from:     process.env.EMAIL_FROM || 'NexusAI <nexus@codeforgeai.in>',
+        to:       [mailOptions.to],
+        subject:  mailOptions.subject,
+        html:     mailOptions.html,
+        ...(mailOptions.replyTo && { reply_to: mailOptions.replyTo }),
+      }),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      console.error(`[EMAIL] Resend API error:`, JSON.stringify(data, null, 2))
+      throw new Error(data.message || 'Resend API failed')
+    }
+
+    console.log(`[EMAIL] ${label} sent to ${mailOptions.to} — id: ${data.id}`)
   } catch (err) {
-    // Log error but don't crash the request — caller already uses .catch()
     console.error(`[EMAIL] Failed to send ${label} to ${mailOptions.to}:`, err.message)
     throw err
   }
@@ -141,7 +116,7 @@ async function sendLimitReachedEmail(email, name, plan, limit) {
         on your ${isFree ? 'Free' : 'Pro'} plan today.
       </p>
       <div style="background:rgba(157,111,255,0.08);border:1px solid rgba(157,111,255,0.25);border-radius:10px;padding:14px 18px;color:#9d6fff;font-size:13px;margin:0 0 20px;">
-         Your limit resets at midnight every day. Come back tomorrow to continue!
+        Your limit resets at midnight every day. Come back tomorrow to continue!
       </div>
       ${isFree ? `
         <p style="color:#8080a8;font-size:14px;margin:0 0 20px;">
@@ -177,9 +152,41 @@ async function sendWelcomeEmail(email, name) {
   }, 'Welcome Email')
 }
 
+async function sendSupportEmail({ name, email, category, subject, message }) {
+  await safeSend({
+    to:      process.env.SUPPORT_EMAIL,
+    replyTo: email,
+    subject: `[${category || 'General'}] ${subject}`,
+    html: base(`
+      <h1 style="color:#eaeaf8;font-size:22px;font-weight:700;margin:0 0 8px;">New Support Request</h1>
+      <p style="color:#8080a8;font-size:14px;margin:0 0 20px;">
+        From: <strong style="color:#eaeaf8">${name}</strong> &lt;${email}&gt;
+      </p>
+      <div style="background:#0e0e18;border:1px solid #323248;border-radius:12px;padding:20px;margin:0 0 16px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="color:#50506a;font-size:13px;padding:6px 0;width:90px;">Category</td>
+            <td style="color:#eaeaf8;font-size:13px;font-weight:600;">${category || 'General'}</td>
+          </tr>
+          <tr>
+            <td style="color:#50506a;font-size:13px;padding:6px 0;">Subject</td>
+            <td style="color:#eaeaf8;font-size:13px;font-weight:600;">${subject}</td>
+          </tr>
+        </table>
+      </div>
+      <div style="background:#0e0e18;border:1px solid #323248;border-radius:12px;padding:20px;">
+        <p style="color:#50506a;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 10px;">Message</p>
+        <p style="color:#eaeaf8;font-size:14px;line-height:1.7;margin:0;">${message.replace(/\n/g, '<br/>')}</p>
+      </div>
+      <p style="color:#50506a;font-size:12px;margin:16px 0 0;">Reply to this email to respond directly to ${name}.</p>
+    `),
+  }, 'Support Email')
+}
+
 module.exports = {
   sendVerificationOTP,
   sendPasswordResetOTP,
   sendLimitReachedEmail,
   sendWelcomeEmail,
+  sendSupportEmail,
 }
