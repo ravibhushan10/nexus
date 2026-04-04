@@ -65,9 +65,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null)
         localStorage.clear()
-        if (!window.location.pathname.startsWith('/login')) {
-          window.location.href = '/login'
-        }
+        window.dispatchEvent(new Event('auth:logout'))
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false

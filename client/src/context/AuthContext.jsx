@@ -23,7 +23,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
-  useEffect(() => { fetchMe() }, [fetchMe])
+ useEffect(() => { fetchMe() }, [fetchMe])
+
+useEffect(() => {
+  const handler = () => {
+    setUser(null)
+  }
+  window.addEventListener('auth:logout', handler)
+  return () => window.removeEventListener('auth:logout', handler)
+}, [])
 
   // Standard email/password login
   const login = (userData, accessToken, refreshToken) => {
