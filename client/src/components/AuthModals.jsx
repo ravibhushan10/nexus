@@ -14,6 +14,7 @@ export default function AuthModals({
   showRegister, onCloseRegister,
   onSwitchToRegister, onSwitchToLogin,
 }) {
+  console.log('AuthModals render:', { showLogin, showRegister })
   return (
     <>
       <div style={{ display: showLogin ? 'block' : 'none' }}>

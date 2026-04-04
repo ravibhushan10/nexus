@@ -14,6 +14,7 @@ import Help      from './pages/Help'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
+  console.log('PrivateRoute render:', { user: !!user, loading })
   const [showLogin,    setShowLogin]    = useState(false)
   const [showRegister, setShowRegister] = useState(false)
 
