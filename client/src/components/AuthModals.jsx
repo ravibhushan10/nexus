@@ -14,7 +14,6 @@ export default function AuthModals({
   showRegister, onCloseRegister,
   onSwitchToRegister, onSwitchToLogin,
 }) {
-  console.log('AuthModals render:', { showLogin, showRegister })
   return (
     <>
       <div style={{ display: showLogin ? 'block' : 'none' }}>
@@ -419,6 +418,9 @@ function LoginModal({ onClose, onSwitch }) {
     try {
       const { data } = await api.post('/auth/verify-reset-otp', { email: fpEmail, otp: code })
       setResetToken(data.resetToken)
+      setOtp(['','','','','',''])
+      setOtpError('')
+      setNewPwd(''); setNewPwdError(''); setNewPwdErrors(false); setNewPwdShow(false)
       setScreen('newPwd')
     } catch (err) {
       const errCode = err.response?.data?.code
@@ -605,7 +607,17 @@ function LoginModal({ onClose, onSwitch }) {
 
   // ══ SCREEN: newPwd ══════════════════════════════════════════════════════════
   if (screen === 'newPwd') return (
-    <ModalShell onClose={onClose}>
+    <ModalShell onClose={() => {
+      setResetToken(''); setNewPwd(''); setNewPwdError(''); setNewPwdErrors(false)
+      setOtp(['','','','','','']); setOtpError('')
+      setScreen('forgotEmail')
+    }}>
+      <button type="button" className={styles.backBtn}
+        onClick={() => {
+          setResetToken(''); setNewPwd(''); setNewPwdError(''); setNewPwdErrors(false)
+          setOtp(['','','','','','']); setOtpError('')
+          setScreen('forgotEmail')
+        }}>← Back</button>
       <h2 className={styles.title}>Set new password</h2>
       <p className={styles.subtitle}>Choose a strong password for your account.</p>
 
@@ -615,14 +627,13 @@ function LoginModal({ onClose, onSwitch }) {
           <input className="input-field" type={newPwdShow ? 'text' : 'password'}
             placeholder="Min 8 characters" value={newPwd}
             onChange={e => { setNewPwd(e.target.value); setNewPwdError('') }}
-            onFocus={() => setNewPwdFocused(true)} onBlur={() => setNewPwdFocused(false)}
             autoFocus
           />
           <button type="button" className={styles.eyeBtn} onClick={() => setNewPwdShow(p => !p)}>
             {newPwdShow ? <EyeOff /> : <EyeOpen />}
           </button>
         </div>
-        {newPwdFocused && <PasswordChecklist password={newPwd} showErrors={newPwdErrors} />}
+        <PasswordChecklist password={newPwd} showErrors={newPwdErrors} />
       </div>
 
       {newPwdError && (
@@ -639,7 +650,14 @@ function LoginModal({ onClose, onSwitch }) {
 
   // ══ SCREEN: success ═════════════════════════════════════════════════════════
   if (screen === 'success') return (
-    <ModalShell onClose={onClose}>
+    <ModalShell onClose={() => {
+      setNewPwd(''); setResetToken(''); setOtp(['','','','','',''])
+      setOtpError(''); setNewPwdError(''); setFpError(null)
+      setOtpCountdown(0); setOtpExpiry(null); setOtpResendCooldown(0)
+      setOtpAttemptsLeft(OTP_MAX_ATTEMPTS); setOtpLocked(false)
+      setFpCooldown(0); setPassword(''); setServerError(null)
+      setEmail(fpEmail); setScreen('login')
+    }}>
       <div style={{ textAlign: 'center' }}>
         <div className={styles.successIcon}>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
@@ -650,22 +668,12 @@ function LoginModal({ onClose, onSwitch }) {
         <h2 className={styles.title}>Password reset!</h2>
         <p className={styles.subtitle}>Your password has been updated. Sign in with your new password.</p>
        <button className={styles.submitBtn} onClick={() => {
-  setNewPwd('')
-  setResetToken('')
-  setOtp(['','','','','',''])
-  setOtpError('')
-  setNewPwdError('')
-  setFpError(null)
-  setOtpCountdown(0)
-  setOtpExpiry(null)
-  setOtpResendCooldown(0)
-  setOtpAttemptsLeft(OTP_MAX_ATTEMPTS)
-  setOtpLocked(false)
-  setFpCooldown(0)
-  setPassword('')
-  setServerError(null)
-  setEmail(fpEmail)   // ← pre-fills email on login screen
-  setScreen('login')  // ← just go to login, don't call login()
+  setNewPwd(''); setResetToken(''); setOtp(['','','','','',''])
+  setOtpError(''); setNewPwdError(''); setFpError(null)
+  setOtpCountdown(0); setOtpExpiry(null); setOtpResendCooldown(0)
+  setOtpAttemptsLeft(OTP_MAX_ATTEMPTS); setOtpLocked(false)
+  setFpCooldown(0); setPassword(''); setServerError(null)
+  setEmail(fpEmail); setScreen('login')
 }}>
   Sign In Now →
 </button>
