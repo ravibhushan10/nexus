@@ -141,7 +141,7 @@ export function useChat({ sidebarRef }) {
         ...(docs.length   > 0 ? { docs }   : {}),  // ← forward docs to backend
       }
 
-      const res = await fetch('/api/chat/send', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/chat/send`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body:    JSON.stringify(body),
