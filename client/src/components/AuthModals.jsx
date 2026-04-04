@@ -636,16 +636,26 @@ function LoginModal({ onClose, onSwitch }) {
         </div>
         <h2 className={styles.title}>Password reset!</h2>
         <p className={styles.subtitle}>Your password has been updated. Sign in with your new password.</p>
-        <button className={styles.submitBtn} onClick={() => {
-          setNewPwd(''); setResetToken(''); setOtp(['','','','','',''])
-          setOtpError(''); setNewPwdError(''); setFpError(null)
-          setOtpCountdown(0); setOtpExpiry(null); setOtpResendCooldown(0)
-          setOtpAttemptsLeft(OTP_MAX_ATTEMPTS); setOtpLocked(false)
-          setFpCooldown(0); setEmail(fpEmail); setPassword(''); setServerError(null)
-          setScreen('login')
-        }}>
-          Sign In
-        </button>
+       <button className={styles.submitBtn} onClick={() => {
+  setNewPwd('')
+  setResetToken('')
+  setOtp(['','','','','',''])
+  setOtpError('')
+  setNewPwdError('')
+  setFpError(null)
+  setOtpCountdown(0)
+  setOtpExpiry(null)
+  setOtpResendCooldown(0)
+  setOtpAttemptsLeft(OTP_MAX_ATTEMPTS)
+  setOtpLocked(false)
+  setFpCooldown(0)
+  setPassword('')
+  setServerError(null)
+  setEmail(fpEmail)   // ← pre-fills email on login screen
+  setScreen('login')  // ← just go to login, don't call login()
+}}>
+  Sign In Now →
+</button>
       </div>
     </ModalShell>
   )
