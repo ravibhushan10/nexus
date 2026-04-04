@@ -350,7 +350,7 @@ function BillingTab({ user }) {
           {user?.plan === 'free' && <Link to="/upgrade" className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 4 }}> Upgrade</Link>}
         </div>
         <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginBottom: 12 }}>
-          {user?.plan === 'pro' ? '₹999/month · 500 messages/day · Llama 3.3 70B' : 'Free forever · 20 messages/day · Llama 3.1 8B'}
+          {user?.plan === 'pro' ? '₹10/month · 500 messages/day · Llama 3.3 70B' : 'Free forever · 20 messages/day · Llama 3.1 8B'}
         </p>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: 6 }}>
           <span style={{ color: 'var(--text-muted)' }}>Messages today</span>

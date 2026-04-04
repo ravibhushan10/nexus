@@ -7,8 +7,8 @@ const Payment     = require('../models/Payment')
 
 // Pricing (in paise)
 const PRICES = {
-  monthly: 100,   // ₹99
-  annual:  79900,  // ₹799
+  monthly: 1000,   // ₹10
+  annual:  5000,  // ₹50
 }
 
 // Lazy-load Razorpay

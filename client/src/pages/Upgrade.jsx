@@ -27,8 +27,8 @@ const PRO_FEATURES = [
   'Priority support',
 ]
 
-const MONTHLY_PRICE = 99
-const ANNUAL_PRICE  = 799
+const MONTHLY_PRICE = 10
+const ANNUAL_PRICE  = 50
 
 function calcBreakdown(base) {
   const gatewayFee = Math.round(base * 0.02)
