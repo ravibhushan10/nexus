@@ -12,9 +12,8 @@ import Settings  from './pages/Settings'
 import SharedChat from './pages/SharedChat'
 import Help      from './pages/Help'
 
-function PrivateRoute({ children }) {
+function AppShell() {
   const { user, loading } = useAuth()
-  console.log('PrivateRoute render:', { user: !!user, loading })
   const [showLogin,    setShowLogin]    = useState(false)
   const [showRegister, setShowRegister] = useState(false)
 
@@ -22,7 +21,14 @@ function PrivateRoute({ children }) {
 
   return (
     <>
-      {!user && (
+      <AuthModals
+        showLogin={showLogin}       onCloseLogin={() => setShowLogin(false)}
+        showRegister={showRegister} onCloseRegister={() => setShowRegister(false)}
+        onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true) }}
+        onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true) }}
+      />
+
+      {!user ? (
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           minHeight: '100vh', background: 'var(--bg-primary)',
@@ -57,18 +63,18 @@ function PrivateRoute({ children }) {
             }}>Create Account</button>
           </div>
         </div>
+      ) : (
+        <Routes>
+          <Route path="/"          element={<Navigate to="/chat" replace />} />
+          <Route path="/chat"      element={<Chat />} />
+          <Route path="/chat/:id"  element={<Chat />} />
+          <Route path="/upgrade"   element={<Upgrade />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/settings"  element={<Settings />} />
+          <Route path="/help"      element={<Help />} />
+          <Route path="*"          element={<Navigate to="/chat" replace />} />
+        </Routes>
       )}
-
-      {/* Always mounted — survives user state change */}
-      <AuthModals
-        showLogin={showLogin}       onCloseLogin={() => setShowLogin(false)}
-        showRegister={showRegister} onCloseRegister={() => setShowRegister(false)}
-        onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true) }}
-        onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true) }}
-      />
-
-      {/* Render protected content when logged in */}
-      {user && children}
     </>
   )
 }
@@ -79,15 +85,8 @@ export default function App() {
       <AuthProvider>
         <SidebarProvider>
           <Routes>
-            <Route path="/"          element={<Navigate to="/chat" replace />} />
-            <Route path="/chat"      element={<PrivateRoute><Chat /></PrivateRoute>} />
-            <Route path="/chat/:id"  element={<PrivateRoute><Chat /></PrivateRoute>} />
-            <Route path="/upgrade"   element={<PrivateRoute><Upgrade /></PrivateRoute>} />
-            <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
-            <Route path="/settings"  element={<PrivateRoute><Settings /></PrivateRoute>} />
-            <Route path="/help"      element={<PrivateRoute><Help /></PrivateRoute>} />
-            <Route path="*"          element={<Navigate to="/chat" replace />} />
             <Route path="/share/:token" element={<SharedChat />} />
+            <Route path="*"            element={<AppShell />} />
           </Routes>
         </SidebarProvider>
       </AuthProvider>
