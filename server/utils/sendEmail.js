@@ -46,6 +46,13 @@ function getFrom() {
 async function safeSend(mailOptions, label, otp) {
   const transport = getTransport()
 
+  try {
+    await transport.sendMail({ ...mailOptions, from: getFrom() })
+    console.log(`[EMAIL] ${label} sent to ${mailOptions.to}`)
+  } catch (err) {
+    console.error(`[EMAIL] FULL ERROR:`, JSON.stringify(err, null, 2)) // ← change this line
+    throw err
+  }
   // Console fallback: DEV_MODE enabled OR no transport configured
   if (DEV_MODE || !transport) {
     console.log(`\n[EMAIL ${DEV_MODE ? 'DEV MODE' : 'NO CONFIG'}] ${label}`)
