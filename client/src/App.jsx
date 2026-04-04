@@ -19,9 +19,9 @@ function PrivateRoute({ children }) {
 
   if (loading) return <PageLoader text="Loading NexusAI..." />
 
-  if (!user) {
-    return (
-      <>
+  return (
+    <>
+      {!user && (
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           minHeight: '100vh', background: 'var(--bg-primary)',
@@ -56,17 +56,20 @@ function PrivateRoute({ children }) {
             }}>Create Account</button>
           </div>
         </div>
-        <AuthModals
-          showLogin={showLogin}       onCloseLogin={() => setShowLogin(false)}
-          showRegister={showRegister} onCloseRegister={() => setShowRegister(false)}
-          onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true) }}
-          onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true) }}
-        />
-      </>
-    )
-  }
+      )}
 
-  return children
+      {/* Always mounted — survives user state change */}
+      <AuthModals
+        showLogin={showLogin}       onCloseLogin={() => setShowLogin(false)}
+        showRegister={showRegister} onCloseRegister={() => setShowRegister(false)}
+        onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true) }}
+        onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true) }}
+      />
+
+      {/* Render protected content when logged in */}
+      {user && children}
+    </>
+  )
 }
 
 export default function App() {
