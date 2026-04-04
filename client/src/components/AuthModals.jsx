@@ -437,17 +437,26 @@ function LoginModal({ onClose, onSwitch }) {
     } finally { setOtpLoading(false) }
   }
 
-  const resetPassword = async () => {
-    setNewPwdErrors(true)
-    if (!isStrongPassword(newPwd)) return
-    setNewPwdLoading(true); setNewPwdError('')
-    try {
-      await api.post('/auth/reset-password', { email: fpEmail, resetToken, newPassword: newPwd })
-      setScreen('success')
-    } catch (err) {
-      setNewPwdError(err.response?.data?.message || 'Failed to reset. Please try again.')
-    } finally { setNewPwdLoading(false) }
-  }
+ const resetPassword = async () => {
+  setNewPwdErrors(true)
+  if (!isStrongPassword(newPwd)) return
+  setNewPwdLoading(true); setNewPwdError('')
+  try {
+    // Use plain fetch instead of api axios instance
+    // to avoid interceptor triggering on this unauthenticated call
+    const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+    const res = await fetch(`${BASE_URL}/api/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: fpEmail, resetToken, newPassword: newPwd }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message || 'Failed to reset.')
+    setScreen('success')
+  } catch (err) {
+    setNewPwdError(err.message || 'Failed to reset. Please try again.')
+  } finally { setNewPwdLoading(false) }
+}
 
   // ══ SCREEN: login ══════════════════════════════════════════════════════════
   if (screen === 'login') return (
