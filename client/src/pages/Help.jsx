@@ -217,7 +217,7 @@ const borderColor = (field) => {
                       </label>
                       <input
                         className="input-field"
-                        placeholder="Ravibhushan Kumar"
+                        placeholder="Nikhil kumar"
                         value={form.name}
                         onChange={e => handleChange('name', e.target.value)}
                         style={{ width: '100%', boxSizing: 'border-box', borderColor: borderColor('name') }}
