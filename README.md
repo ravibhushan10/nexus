@@ -284,10 +284,10 @@ A modern, full-stack AI chat application powered by **Groq's ultra-fast inferenc
 
 ## 👨‍💻 Author
 
-**Maurya Ji**
-- LinkedIn: [your-linkedin-url](https://www.linkedin.com/in/ravibhushan-kumar)
-- Portfolio: [your-portfolio-url](https://ravibhushan-portfolio.vercel.app)
-- GitHub: [@your-username](https://github.com/ravibhushan10)
+**Ravi Bhushan**
+- LinkedIn: [https://www.linkedin.com/in/ravibhushan-kumar-55b312344](https://www.linkedin.com/in/ravibhushan-kumar-55b312344/)
+- Portfolio: [https://ravibhushan-portfolio.vercel.app](https://ravibhushan-portfolio.vercel.app)
+- GitHub: [@ravibhushan10](https://github.com/ravibhushan10)
 - Email: ravibhushankumar87tp@gmail.com
 
 ---
