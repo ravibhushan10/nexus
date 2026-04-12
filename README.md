@@ -43,7 +43,6 @@ A modern, full-stack AI chat application powered by **Groq's ultra-fast inferenc
 
 ## [🌐 Live Demo](https://nexus-three-mauve.vercel.app)
 
----
 
 ## 🌟 Features
 
