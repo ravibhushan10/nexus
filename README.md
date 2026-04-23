@@ -9,32 +9,32 @@ A modern, full-stack AI chat application powered by **Groq's ultra-fast inferenc
 <table align="center">
   <tr>
     <td align="center">
-      <img src="screenshots/landing.png"><br/>
-      <em>Landing Page</em>
+      <img src="screenshots/SignUp.png"><br/>
+      <em>Signup Page</em>
     </td>
     <td align="center">
-      <img src="screenshots/login.png"><br/>
-      <em>Sign In / Register</em>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="screenshots/chat.png"><br/>
-      <em>Chat Interface</em>
-    </td>
-    <td align="center">
-      <img src="screenshots/sidebar.png"><br/>
-      <em>Sidebar & Conversations</em>
+      <img src="screenshots/Verification.png"><br/>
+      <em>Email Verification</em>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <img src="screenshots/analytics.png"><br/>
-      <em>Analytics Dashboard</em>
+      <img src="screenshots/Page.png"><br/>
+      <em>Home Interface</em>
     </td>
     <td align="center">
-      <img src="screenshots/upgrade.png"><br/>
-      <em>Pro Upgrade Page</em>
+      <img src="screenshots/Answer.png"><br/>
+      <em>Answer page</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/Pro.png"><br/>
+      <em>Subscription Layout</em>
+    </td>
+    <td align="center">
+      <img src="screenshots/Profile.png"><br/>
+      <em>Profile Management</em>
     </td>
   </tr>
 </table>
