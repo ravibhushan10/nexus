@@ -13,12 +13,12 @@ const {
   sendWelcomeEmail,
 } = require('../utils/sendEmail')
 
-// ── Constants ──────────────────────────────────────────────────────────────
-const OTP_EXPIRY_MS   = 2 * 60 * 1000        // 2 minutes
-const OTP_MAX_ATTEMPTS = 2                    // lock after 2nd wrong attempt
-const OTP_LOCK_MS      = 15 * 60 * 1000      // 15-minute lockout
 
-// ── Multer — avatar uploads ────────────────────────────────────────────────
+const OTP_EXPIRY_MS   = 2 * 60 * 1000
+const OTP_MAX_ATTEMPTS = 2
+const OTP_LOCK_MS      = 15 * 60 * 1000
+
+
 const avatarStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, '../uploads/avatars')
@@ -56,7 +56,7 @@ const _sanitise = (user) => ({
   promptTemplates: user.promptTemplates,
 })
 
-// ── POST /api/auth/register ────────────────────────────────────────────────
+
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body
@@ -67,7 +67,7 @@ router.post('/register', async (req, res) => {
 
     const exists = await User.findOne({ email: email.toLowerCase() })
 
-    // Email belongs to an OAuth-only account
+
     if (exists && exists.oauthProvider && !exists.password) {
       return res.status(400).json({
         message: `This email is already linked to a ${exists.oauthProvider === 'google' ? 'Google' : 'GitHub'} account. Please sign in with that instead.`,
@@ -76,10 +76,10 @@ router.post('/register', async (req, res) => {
       })
     }
 
-    // Unverified normal account — resend fresh OTP
+
     if (exists && !exists.isVerified) {
       const otp = genOTP()
-      // Use $set to avoid touching password and triggering the hash hook
+
       await User.findByIdAndUpdate(exists._id, {
         $set: {
           verifyOtp:            otp,
@@ -112,7 +112,7 @@ router.post('/register', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/verify-otp ─────────────────────────────────────────────
+
 router.post('/verify-otp', async (req, res) => {
   try {
     const { email, otp } = req.body
@@ -130,7 +130,7 @@ router.post('/verify-otp', async (req, res) => {
     if (user.verifyOtp !== otp) {
       const newCount = (user.verifyOtpCount || 0) + 1
       const locked   = newCount >= OTP_MAX_ATTEMPTS
-      // Use $set so the pre-save hook never sees `password` as modified
+
       await User.findByIdAndUpdate(user._id, {
         $set: {
           verifyOtpCount:       newCount,
@@ -150,7 +150,7 @@ router.post('/verify-otp', async (req, res) => {
       })
     }
 
-    // OTP correct — mark verified and issue tokens
+
     const accessToken  = user.generateAccessToken()
     const refreshToken = user.generateRefreshToken()
 
@@ -173,7 +173,7 @@ router.post('/verify-otp', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/resend-otp ─────────────────────────────────────────────
+
 router.post('/resend-otp', async (req, res) => {
   try {
     const { email } = req.body
@@ -199,7 +199,7 @@ router.post('/resend-otp', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/login ──────────────────────────────────────────────────
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body
@@ -208,7 +208,7 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email: email.toLowerCase() })
     if (!user) return res.status(401).json({ message: 'Invalid credentials' })
 
-    // OAuth-only account — no password set
+
     if (user.oauthProvider && !user.password) {
       return res.status(401).json({
         message:  `This account was created with ${user.oauthProvider === 'google' ? 'Google' : 'GitHub'}. Please sign in using that instead.`,
@@ -220,7 +220,7 @@ router.post('/login', async (req, res) => {
     const isMatch = await user.comparePassword(password)
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' })
 
-    // Registered but not verified — resend OTP
+
     if (!user.isVerified) {
       const otp = genOTP()
       await User.findByIdAndUpdate(user._id, {
@@ -251,7 +251,7 @@ router.post('/login', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/forgot-password ────────────────────────────────────────
+
 router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body
@@ -259,10 +259,10 @@ router.post('/forgot-password', async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() })
 
-    // Generic response to prevent email enumeration
+
     if (!user) return res.json({ message: 'If this email exists, an OTP has been sent.' })
 
-    // OAuth-only account has no password to reset
+
     if (user.oauthProvider && !user.password) {
       return res.status(400).json({
         message:  `This account uses ${user.oauthProvider === 'google' ? 'Google' : 'GitHub'} sign-in and has no password to reset.`,
@@ -287,7 +287,7 @@ router.post('/forgot-password', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/verify-reset-otp ──────────────────────────────────────
+
 router.post('/verify-reset-otp', async (req, res) => {
   try {
     const { email, otp } = req.body
@@ -324,7 +324,7 @@ router.post('/verify-reset-otp', async (req, res) => {
       })
     }
 
-    // OTP correct — issue a 15-min reset token
+
     const resetToken = crypto.randomBytes(32).toString('hex')
     await User.findByIdAndUpdate(user._id, {
       $set: {
@@ -342,10 +342,10 @@ router.post('/verify-reset-otp', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/reset-password ─────────────────────────────────────────
-// FIX: was using user.save() which caused pre-save hook to double-hash the
-// already-in-memory plain password IF resetToken/expiry cleared simultaneously.
-// Now we hash explicitly and use $set to be 100% safe.
+
+
+
+
 router.post('/reset-password', async (req, res) => {
   try {
     const { email, resetToken, newPassword } = req.body
@@ -366,7 +366,7 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired reset link. Please start over.' })
     }
 
-    // Hash manually here — bypassing pre-save hook entirely is the safest approach
+
     const bcrypt = require('bcryptjs')
     const hashed = await bcrypt.hash(newPassword, 12)
 
@@ -376,7 +376,7 @@ router.post('/reset-password', async (req, res) => {
         resetToken:       '',
         resetTokenExpiry: null,
         resetOtpCount:    0,
-        // Invalidate any active refresh tokens so old sessions can't be reused
+
         refreshToken:     '',
       },
     })
@@ -388,9 +388,9 @@ router.post('/reset-password', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/oauth ──────────────────────────────────────────────────
-// FIX: no longer silently merges when email has a password account.
-// Returns specific codes so the frontend can show the right action.
+
+
+
 router.post('/oauth', async (req, res) => {
   try {
     const { name, email, oauthProvider, oauthId, avatar } = req.body
@@ -400,7 +400,7 @@ router.post('/oauth', async (req, res) => {
     let user = await User.findOne({ email: email.toLowerCase() })
 
     if (user) {
-      // Email already registered with a password — block the OAuth merge
+
       if (user.password && !user.oauthProvider) {
         return res.status(409).json({
           message: 'This email is already registered with a password. Please sign in with your email and password instead.',
@@ -408,7 +408,7 @@ router.post('/oauth', async (req, res) => {
         })
       }
 
-      // Same email but different OAuth provider
+
       if (user.oauthProvider && user.oauthProvider !== oauthProvider) {
         return res.status(409).json({
           message:  `This email is already linked to ${user.oauthProvider === 'google' ? 'Google' : 'GitHub'}. Please use that to sign in.`,
@@ -417,7 +417,7 @@ router.post('/oauth', async (req, res) => {
         })
       }
 
-      // Returning OAuth user — update avatar if missing, ensure verified
+
       await User.findByIdAndUpdate(user._id, {
         $set: {
           isVerified: true,
@@ -426,7 +426,7 @@ router.post('/oauth', async (req, res) => {
       })
       user = await User.findById(user._id)
     } else {
-      // Brand-new OAuth user
+
       user = await User.create({
         name:          name || email.split('@')[0],
         email:         email.toLowerCase(),
@@ -449,7 +449,7 @@ router.post('/oauth', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/refresh ────────────────────────────────────────────────
+
 router.post('/refresh', async (req, res) => {
   try {
     const { refreshToken } = req.body
@@ -471,7 +471,7 @@ router.post('/refresh', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/logout ─────────────────────────────────────────────────
+
 router.post('/logout', protect, async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.user._id, { $set: { refreshToken: '' } })
@@ -481,13 +481,13 @@ router.post('/logout', protect, async (req, res) => {
   }
 })
 
-// ── GET /api/auth/me ──────────────────────────────────────────────────────
+
 router.get('/me', protect, async (req, res) => {
   const user = await User.findById(req.user._id).select('-password -refreshToken')
   res.json({ user: _sanitise(user) })
 })
 
-// ── PUT /api/auth/profile ──────────────────────────────────────────────────
+
 router.put('/profile', protect, async (req, res) => {
   try {
     const { name } = req.body
@@ -503,7 +503,7 @@ router.put('/profile', protect, async (req, res) => {
   }
 })
 
-// ── POST /api/auth/avatar ─────────────────────────────────────────────────
+
 router.post('/avatar', protect, uploadAvatar.single('avatar'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' })
@@ -524,7 +524,7 @@ router.post('/avatar', protect, uploadAvatar.single('avatar'), async (req, res) 
   }
 })
 
-// ── PUT /api/auth/change-password ──────────────────────────────────────────
+
 router.put('/change-password', protect, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body
@@ -537,7 +537,7 @@ router.put('/change-password', protect, async (req, res) => {
     const isMatch = await user.comparePassword(currentPassword)
     if (!isMatch) return res.status(401).json({ message: 'Current password is incorrect' })
 
-    // Hash and save safely
+
     const bcrypt = require('bcryptjs')
     const hashed = await bcrypt.hash(newPassword, 12)
     await User.findByIdAndUpdate(req.user._id, { $set: { password: hashed } })
@@ -548,7 +548,7 @@ router.put('/change-password', protect, async (req, res) => {
   }
 })
 
-// ── PUT /api/auth/system-prompt ────────────────────────────────────────────
+
 router.put('/system-prompt', protect, async (req, res) => {
   try {
     const { systemPrompt } = req.body
@@ -563,7 +563,7 @@ router.put('/system-prompt', protect, async (req, res) => {
   }
 })
 
-// ── PUT /api/auth/language ─────────────────────────────────────────────────
+
 router.put('/language', protect, async (req, res) => {
   try {
     const { language } = req.body
@@ -580,7 +580,7 @@ router.put('/language', protect, async (req, res) => {
   }
 })
 
-// ── DELETE /api/auth/account ───────────────────────────────────────────────
+
 router.delete('/account', protect, async (req, res) => {
   try {
     const userId       = req.user._id

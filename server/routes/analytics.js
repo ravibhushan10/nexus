@@ -4,12 +4,12 @@ const { protect }  = require('../middleware/auth')
 const Conversation = require('../models/Conversation')
 const User         = require('../models/User')
 
-// GET /api/analytics/overview
+
 router.get('/overview', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('usage plan')
 
-    // Last 7 days
+
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
@@ -22,7 +22,7 @@ router.get('/overview', protect, async (req, res) => {
       Conversation.countDocuments({ userId: req.user._id, isDeleted: false }),
     ])
 
-    // Build daily stats map
+
     const dailyStats = {}
     for (let i = 6; i >= 0; i--) {
       const d   = new Date()

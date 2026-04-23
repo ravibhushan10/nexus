@@ -9,34 +9,34 @@ const userSchema = new mongoose.Schema({
   plan:     { type: String, enum: ['free', 'pro'], default: 'free' },
   avatar:   { type: String, default: '' },
 
-  // ── Auth ───────────────────────────────────────────────────────────────
+
   isVerified:    { type: Boolean, default: false },
-  oauthProvider: { type: String, default: '' },   // 'google' | 'github' | ''
+  oauthProvider: { type: String, default: '' },
   oauthId:       { type: String, default: '' },
 
-  // OTP — email verification (register)
-  // Policy: expires in 2 minutes, locks after 2 wrong attempts (3rd = locked)
+
+
   verifyOtp:            { type: String, default: '' },
   verifyOtpExpiry:      { type: Date,   default: null },
   verifyOtpCount:       { type: Number, default: 0 },
   verifyOtpLockedUntil: { type: Date,   default: null },
 
-  // OTP — password reset
-  // Same policy: 2 minutes expiry, 2 attempts before lock
+
+
   resetOtp:            { type: String, default: '' },
   resetOtpExpiry:      { type: Date,   default: null },
   resetOtpCount:       { type: Number, default: 0 },
   resetOtpLockedUntil: { type: Date,   default: null },
 
-  // Reset token — short-lived token issued after OTP is verified
+
   resetToken:       { type: String, default: '' },
   resetTokenExpiry: { type: Date,   default: null },
 
-  // ── Preferences ────────────────────────────────────────────────────────
+
   systemPrompt: { type: String, default: '' },
   language:     { type: String, enum: ['en', 'hi'], default: 'en' },
 
-  // ── Usage ──────────────────────────────────────────────────────────────
+
   usage: {
     messagesToday:   { type: Number, default: 0 },
     totalMessages:   { type: Number, default: 0 },
@@ -45,14 +45,14 @@ const userSchema = new mongoose.Schema({
     lastResetDate:   { type: Date,   default: Date.now },
   },
 
-  // ── Payments ───────────────────────────────────────────────────────────
+
   razorpay: {
     customerId:     { type: String, default: '' },
     subscriptionId: { type: String, default: '' },
     paymentId:      { type: String, default: '' },
   },
 
-  // ── Memory & Templates ─────────────────────────────────────────────────
+
   memory: [{
     key:       String,
     value:     String,
@@ -70,18 +70,18 @@ const userSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
-// ── Hash password ─────────────────────────────────────────────────────────
-// CRITICAL: Only hashes when `password` field is actually modified.
-// This means routes that update OTHER fields (resetToken, OTP, etc.) must use
-// findByIdAndUpdate({ $set: {...} }) instead of user.save() to avoid
-// accidentally double-hashing an already-hashed password.
+
+
+
+
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || !this.password) return next()
   this.password = await bcrypt.hash(this.password, 12)
   next()
 })
 
-// ── Reset daily count if new day ──────────────────────────────────────────
+
 userSchema.methods.resetDailyIfNeeded = function () {
   const now  = new Date()
   const last = new Date(this.usage.lastResetDate)
@@ -120,7 +120,7 @@ userSchema.methods.shouldSendLimitEmail = function () {
   return new Date(this.limitEmailSentDate).toDateString() !== new Date().toDateString()
 }
 
-// Lock check helpers
+
 userSchema.methods.isVerifyOtpLocked = function () {
   return !!(this.verifyOtpLockedUntil && this.verifyOtpLockedUntil > new Date())
 }

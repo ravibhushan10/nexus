@@ -1,9 +1,7 @@
-// ── DEV MODE: logs OTP to console instead of sending email ────────────────────
+
 const DEV_MODE = process.env.EMAIL_DEV_MODE === 'true'
 
-// ── Safe send via Resend HTTP API ─────────────────────────────────────────────
 async function safeSend(mailOptions, label, otp) {
-  // Console fallback: DEV_MODE enabled
   if (DEV_MODE) {
     console.log(`\n[EMAIL DEV MODE] ${label}`)
     console.log(`   To:      ${mailOptions.to}`)
@@ -47,7 +45,6 @@ async function safeSend(mailOptions, label, otp) {
   }
 }
 
-// ── Email templates ───────────────────────────────────────────────────────────
 const base = (content) => `
 <!DOCTYPE html><html><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#080810;font-family:'Segoe UI',Arial,sans-serif;">
@@ -69,7 +66,6 @@ const otpBox = (otp, label) => `
     <p style="color:#50506a;font-size:12px;margin:8px 0 0;">${label}</p>
   </div>`
 
-// ── Email senders ─────────────────────────────────────────────────────────────
 async function sendVerificationOTP(email, name, otp) {
   await safeSend({
     to:      email,

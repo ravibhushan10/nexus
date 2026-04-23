@@ -5,9 +5,9 @@ import { useOAuth, isFirebaseConfigured } from '../hooks/useAuth.js'
 import api from '../utils/api'
 import styles from './AuthModals.module.css'
 
-// OTP policy (must match backend constants)
-const OTP_EXPIRY_SECS  = 2 * 60   // 2 minutes
-const OTP_MAX_ATTEMPTS = 2         // show 1 attempt remaining after 1st wrong, lock after 2nd
+
+const OTP_EXPIRY_SECS  = 2 * 60
+const OTP_MAX_ATTEMPTS = 2
 
 export default function AuthModals({
   showLogin, onCloseLogin,
@@ -26,7 +26,7 @@ export default function AuthModals({
   )
 }
 
-// ── SVG Icons ────────────────────────────────────────────────────────────────
+
 function EyeOpen() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -64,7 +64,7 @@ function GitHubIcon() {
   )
 }
 
-// ── Banner — error / warning / success with action links ─────────────────────
+
 function Banner({ error, onGoogle, onGitHub, onSwitchToLogin, onSwitchToRegister }) {
   if (!error) return null
 
@@ -145,7 +145,7 @@ function PasswordChecklist({ password, showErrors }) {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-// ── OTP countdown: MM:SS, turns red under 30s ─────────────────────────────
+
 function OtpTimer({ countdown }) {
   if (!countdown || countdown <= 0) return null
   const m   = String(Math.floor(countdown / 60)).padStart(2, '0')
@@ -165,7 +165,7 @@ function OtpTimer({ countdown }) {
   )
 }
 
-// ── Attempt indicator: shows dots for remaining tries ────────────────────────
+
 function AttemptDots({ remaining, max }) {
   if (remaining >= max) return null
   return (
@@ -185,7 +185,7 @@ function AttemptDots({ remaining, max }) {
   )
 }
 
-// ── 6-box OTP input ──────────────────────────────────────────────────────────
+
 function OtpInput({ otp, setOtp, otpError, otpRefs, disabled }) {
   const handleChange = (i, val) => {
     if (!/^\d?$/.test(val)) return
@@ -220,7 +220,7 @@ function OtpInput({ otp, setOtp, otpError, otpRefs, disabled }) {
 }
 
 
-// ── Modal shell ──────────────────────────────────────────────────────────────
+
 function ModalShell({ onClose, children }) {
   return (
     <div className={styles.overlay} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -233,9 +233,9 @@ function ModalShell({ onClose, children }) {
   )
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// LOGIN MODAL
-// ════════════════════════════════════════════════════════════════════════════
+
+
+
 function LoginModal({ onClose, onSwitch }) {
   const { login }                            = useAuth()
   const { loginWithGoogle, loginWithGitHub } = useOAuth()
@@ -256,13 +256,13 @@ function LoginModal({ onClose, onSwitch }) {
   const [resendDone,     setResendDone]     = useState(false)
   const [resendCooldown, setResendCooldown] = useState(0)
 
-  // Forgot-password state
+
   const [fpEmail,    setFpEmail]    = useState('')
   const [fpLoading,  setFpLoading]  = useState(false)
   const [fpError,    setFpError]    = useState(null)
   const [fpCooldown, setFpCooldown] = useState(0)
 
-  // OTP state (shared for reset flow)
+
   const [otp,               setOtp]               = useState(['','','','','',''])
   const [otpLoading,        setOtpLoading]         = useState(false)
   const [otpError,          setOtpError]           = useState('')
@@ -273,7 +273,7 @@ function LoginModal({ onClose, onSwitch }) {
   const [otpLocked,         setOtpLocked]          = useState(false)
   const otpRefs = useRef([])
 
-  // New password state
+
   const [resetToken,    setResetToken]    = useState('')
   const [newPwd,        setNewPwd]        = useState('')
   const [newPwdShow,    setNewPwdShow]    = useState(false)
@@ -282,7 +282,7 @@ function LoginModal({ onClose, onSwitch }) {
   const [newPwdLoading, setNewPwdLoading] = useState(false)
   const [newPwdError,   setNewPwdError]   = useState('')
 
-  // ── Countdown timers ─────────────────────────────────────────────────────
+
   useEffect(() => {
     if (screen !== 'otp' || !otpExpiry) return
     const iv = setInterval(() => {
@@ -357,7 +357,7 @@ function LoginModal({ onClose, onSwitch }) {
     } finally { setResendLoading(false) }
   }
 
-  // ── OAuth handlers ────────────────────────────────────────────────────────
+
   const handleGoogle = async () => {
     clearAll()
     try {
@@ -388,7 +388,7 @@ function LoginModal({ onClose, onSwitch }) {
     }
   }
 
-  // ── Forgot-password flow ──────────────────────────────────────────────────
+
   const sendResetOtp = async (isResend = false) => {
     setFpError(null); setFpLoading(true)
     try {
@@ -444,8 +444,8 @@ function LoginModal({ onClose, onSwitch }) {
   if (!isStrongPassword(newPwd)) return
   setNewPwdLoading(true); setNewPwdError('')
   try {
-    // Use plain fetch instead of api axios instance
-    // to avoid interceptor triggering on this unauthenticated call
+
+
     const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
     const res = await fetch(`${BASE_URL}/api/auth/reset-password`, {
       method: 'POST',
@@ -460,7 +460,7 @@ function LoginModal({ onClose, onSwitch }) {
   } finally { setNewPwdLoading(false) }
 }
 
-  // ══ SCREEN: login ══════════════════════════════════════════════════════════
+
   if (screen === 'login') return (
     <ModalShell onClose={onClose}>
       <h2 className={styles.title}>Welcome back</h2>
@@ -534,7 +534,7 @@ function LoginModal({ onClose, onSwitch }) {
     </ModalShell>
   )
 
-  // ══ SCREEN: forgotEmail ═════════════════════════════════════════════════════
+
   if (screen === 'forgotEmail') return (
     <ModalShell onClose={onClose}>
       <button type="button" className={styles.backBtn}
@@ -561,7 +561,7 @@ function LoginModal({ onClose, onSwitch }) {
     </ModalShell>
   )
 
-  // ══ SCREEN: otp ═════════════════════════════════════════════════════════════
+
   if (screen === 'otp') return (
     <ModalShell onClose={onClose}>
       <button type="button" className={styles.backBtn}
@@ -586,7 +586,7 @@ function LoginModal({ onClose, onSwitch }) {
         </div>
       )}
 
-      {/* Show Resend when expired or locked, Verify otherwise */}
+
       {(otpCountdown === 0 || otpLocked) ? (
         <button className={styles.submitBtn} style={{ marginTop: 16 }}
           onClick={() => sendResetOtp(true)}
@@ -605,7 +605,7 @@ function LoginModal({ onClose, onSwitch }) {
     </ModalShell>
   )
 
-  // ══ SCREEN: newPwd ══════════════════════════════════════════════════════════
+
   if (screen === 'newPwd') return (
     <ModalShell onClose={() => {
       setResetToken(''); setNewPwd(''); setNewPwdError(''); setNewPwdErrors(false)
@@ -648,7 +648,7 @@ function LoginModal({ onClose, onSwitch }) {
     </ModalShell>
   )
 
-  // ══ SCREEN: success ═════════════════════════════════════════════════════════
+
   if (screen === 'success') return (
     <ModalShell onClose={() => {
       setNewPwd(''); setResetToken(''); setOtp(['','','','','',''])
@@ -684,9 +684,9 @@ function LoginModal({ onClose, onSwitch }) {
   return null
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// REGISTER MODAL
-// ════════════════════════════════════════════════════════════════════════════
+
+
+
 function RegisterModal({ onClose, onSwitch }) {
   const { login }                            = useAuth()
   const { loginWithGoogle, loginWithGitHub } = useOAuth()
@@ -721,7 +721,7 @@ function RegisterModal({ onClose, onSwitch }) {
 
   const clearAll = () => { setOauthError(null); setServerError(null); setFieldErrors({}) }
 
-  // Countdown
+
   useEffect(() => {
     if (screen !== 'otp' || !otpExpiry) return
     const iv = setInterval(() => {
@@ -815,7 +815,7 @@ function RegisterModal({ onClose, onSwitch }) {
     }
     setLoading(true)
     try {
-      // Register returns 200/201 with code VERIFY_OTP — NOT an error
+
       await api.post('/auth/register', { name: name.trim(), email: email.trim(), password })
       goToOtp(email.trim())
     } catch (err) {
@@ -862,7 +862,7 @@ function RegisterModal({ onClose, onSwitch }) {
     }
   }
 
-  // ══ OTP SCREEN ══════════════════════════════════════════════════════════════
+
   if (screen === 'otp') return (
     <ModalShell onClose={onClose}>
 
@@ -913,7 +913,7 @@ function RegisterModal({ onClose, onSwitch }) {
     </ModalShell>
   )
 
-  // ══ REGISTER FORM ════════════════════════════════════════════════════════════
+
   return (
     <ModalShell onClose={onClose}>
       <h2 className={styles.title}>Create your account</h2>

@@ -41,7 +41,7 @@ function fmtFullDateTime(ts) {
   })
 }
 
-/* ── Shared tooltip box — same dark box style as the timestamp popup ── */
+
 function Tooltip({ label, show }) {
   if (!label) return null
   return (
@@ -70,7 +70,7 @@ function Tooltip({ label, show }) {
   )
 }
 
-/* ── Date badge with tooltip showing full datetime ─────────────────── */
+
 function DateBadge({ ts }) {
   const [show, setShow] = useState(false)
   if (!ts) return null
@@ -95,10 +95,7 @@ function DateBadge({ ts }) {
   )
 }
 
-/* ── Universal icon button — icon only by default, tooltip below on hover ──
-   active:      keeps the icon coloured even after hover ends
-   activeColor: colour used when active (green for like/copy, red for dislike)
-──────────────────────────────────────────────────────────────────────────── */
+
 function IconBtn({ onClick, tooltip, children, active, activeColor = 'var(--green)' }) {
   const [hov, setHov] = useState(false)
   return (
@@ -129,7 +126,7 @@ function IconBtn({ onClick, tooltip, children, active, activeColor = 'var(--gree
   )
 }
 
-/* ── Code-block copy button (inline, with text label) ──────────────── */
+
 function CopyBtn({ text }) {
   const [copied, setCopied] = useState(false)
   return (
@@ -162,14 +159,12 @@ function CopyBtn({ text }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Main MessageBubble
-══════════════════════════════════════════════════════════════════════ */
+
 export default function MessageBubble({ message, isStreaming, onRetry, onEdit }) {
   const isUser = message.role === 'user'
 
   const [copied,   setCopied]   = useState(false)
-  const [feedback, setFeedback] = useState(null)   // null | 'up' | 'down'
+  const [feedback, setFeedback] = useState(null)
   const [hovering, setHovering] = useState(false)
 
   const ts = message.createdAt || message.timestamp
@@ -180,7 +175,7 @@ export default function MessageBubble({ message, isStreaming, onRetry, onEdit })
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // Toggle: click same button again to deactivate
+
   const handleFeedback = (type) =>
     setFeedback(prev => prev === type ? null : type)
 
@@ -197,10 +192,10 @@ export default function MessageBubble({ message, isStreaming, onRetry, onEdit })
       onMouseLeave={() => setHovering(false)}
     >
 
-      {/* ═══ BUBBLE ════════════════════════════════════════════════ */}
+
       {message.content && (
         isUser ? (
-          /* User: pill bubble, right side */
+
           <div style={{
             maxWidth: '75%',
             background: 'var(--bg-card)',
@@ -214,7 +209,7 @@ export default function MessageBubble({ message, isStreaming, onRetry, onEdit })
             <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{message.content}</p>
           </div>
         ) : (
-          /* AI: plain prose, left side */
+
           <div
             style={{ width: '100%' }}
             className={`prose-chat${isStreaming ? ' typing-cursor' : ''}`}
@@ -303,7 +298,7 @@ export default function MessageBubble({ message, isStreaming, onRetry, onEdit })
         )
       )}
 
-      {/* ═══ RAG SOURCES ═══════════════════════════════════════════ */}
+
       {message.sources?.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
           {message.sources.map((s, i) => (
@@ -326,7 +321,7 @@ export default function MessageBubble({ message, isStreaming, onRetry, onEdit })
           minHeight: 30,
         }}>
 
-          {/* ── USER toolbar ── */}
+
           {isUser && (
             <>
               <DateBadge ts={ts} />
@@ -363,7 +358,7 @@ export default function MessageBubble({ message, isStreaming, onRetry, onEdit })
             </>
           )}
 
-          {/* ── AI toolbar ── */}
+
           {!isUser && (
             <>
               <IconBtn

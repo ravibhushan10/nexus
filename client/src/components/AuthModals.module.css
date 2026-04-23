@@ -1,4 +1,4 @@
-/* ── Overlay & Modal shell ─────────────────────────────────────────────── */
+
 .overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.65);
@@ -25,7 +25,7 @@
   to   { opacity: 1; transform: scale(1)  translateY(0); }
 }
 
-/* ── Logo ──────────────────────────────────────────────────────────────── */
+
 .logoRow {
   display: flex; align-items: center; gap: 10px;
   margin-bottom: 24px;
@@ -42,7 +42,7 @@
   color: var(--text-primary); letter-spacing: -.3px;
 }
 
-/* ── Close button ──────────────────────────────────────────────────────── */
+
 .closeBtn {
   position: absolute; top: 14px; right: 16px;
   background: none; border: none; cursor: pointer;
@@ -52,7 +52,7 @@
 }
 .closeBtn:hover { color: var(--text-primary); }
 
-/* ── Title & subtitle ──────────────────────────────────────────────────── */
+
 .title {
   font-size: 1.2rem; font-weight: 700;
   color: var(--text-primary); margin: 0 0 4px;
@@ -62,7 +62,7 @@
   margin: 0 0 22px; line-height: 1.5;
 }
 
-/* ── Form fields ───────────────────────────────────────────────────────── */
+
 .field {
   display: flex; flex-direction: column; gap: 6px;
   margin-bottom: 14px;
@@ -79,7 +79,7 @@
 }
 .fieldHintError { font-size: .73rem; color: var(--red); margin: 3px 0 0; }
 
-/* ── Password field ────────────────────────────────────────────────────── */
+
 .pwdWrap { position: relative; }
 .pwdWrap .input-field { padding-right: 44px; width: 100%; }
 .eyeBtn {
@@ -98,7 +98,7 @@
 }
 .forgotLink:hover { color: var(--purple); }
 
-/* ── Password checklist ────────────────────────────────────────────────── */
+
 .checklist {
   list-style: none; margin: 10px 0 0; padding: 10px 12px;
   display: flex; flex-direction: column; gap: 5px;
@@ -114,7 +114,7 @@
   background: currentColor; flex-shrink: 0; margin-left: 3px;
 }
 
-/* ── Submit button ─────────────────────────────────────────────────────── */
+
 .submitBtn {
   width: 100%; padding: 12px;
   background: linear-gradient(135deg, var(--purple), #6b3fd4);
@@ -127,7 +127,7 @@
 .submitBtn:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
 .submitBtn:disabled { opacity: .45; cursor: not-allowed; }
 
-/* ── Spinner ───────────────────────────────────────────────────────────── */
+
 .spinner {
   width: 14px; height: 14px; border-radius: 50%;
   border: 2px solid rgba(255,255,255,.3);
@@ -136,7 +136,7 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Social buttons ────────────────────────────────────────────────────── */
+
 .socialBtn {
   width: 100%; padding: 11px;
   background: var(--bg-secondary);
@@ -149,7 +149,7 @@
 }
 .socialBtn:hover { background: var(--bg-hover); border-color: var(--border-light); }
 
-/* ── Or divider ────────────────────────────────────────────────────────── */
+
 .orDivider {
   display: flex; align-items: center; gap: 12px;
   margin: 16px 0; color: var(--text-muted); font-size: .76rem;
@@ -158,7 +158,7 @@
   content: ''; flex: 1; height: 1px; background: var(--border);
 }
 
-/* ── Banners ───────────────────────────────────────────────────────────── */
+
 .banner {
   border-radius: var(--r-sm); padding: 11px 14px;
   margin-bottom: 12px; font-size: .83rem; line-height: 1.55;
@@ -184,7 +184,7 @@
 }
 .hintBtn:hover { opacity: 1; }
 
-/* ── Switch / back buttons ─────────────────────────────────────────────── */
+
 .switchText { text-align: center; margin-top: 16px; font-size: .83rem; color: var(--text-secondary); }
 .switchBtn {
   background: none; border: none; color: var(--purple);
@@ -200,7 +200,7 @@
 }
 .backBtn:hover { color: var(--text-primary); }
 
-/* ── OTP ───────────────────────────────────────────────────────────────── */
+
 .otpRow {
   display: flex; gap: 10px; justify-content: center; margin: 8px 0 4px;
 }
@@ -221,7 +221,7 @@
   box-shadow: 0 0 0 3px rgba(255,92,92,.08) !important;
 }
 
-/* ── Success icon ──────────────────────────────────────────────────────── */
+
 .successIcon {
   width: 68px; height: 68px; border-radius: 50%;
   background: rgba(0,208,132,.1); border: 1px solid rgba(0,208,132,.2);
@@ -230,7 +230,7 @@
   margin: 0 auto 20px;
 }
 
-/* ── Responsive ────────────────────────────────────────────────────────── */
+
 @media (max-width: 480px) {
   .modal { padding: 24px 18px; }
   .otpBox { width: 40px; height: 48px; font-size: 1.2rem; }

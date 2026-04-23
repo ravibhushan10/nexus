@@ -51,10 +51,10 @@ export default function Upgrade() {
   const isAnnual = billing === 'annual'
   const bd       = calcBreakdown(isAnnual ? ANNUAL_PRICE : MONTHLY_PRICE)
 
-  // ── Open modal (no loading on upgrade page) ───────────────────────────
+
   const handleUpgradeClick = () => { if (!loading) setShowModal(true) }
 
-  // ── Pay button inside modal ───────────────────────────────────────────
+
   const handleConfirmPay = async () => {
     setLoading(true)
     try {
@@ -88,7 +88,7 @@ export default function Upgrade() {
         modal: {
           ondismiss: () => {
             setLoading(false)
-            // modal stays open so user can retry
+
           }
         },
       }
@@ -125,7 +125,7 @@ export default function Upgrade() {
       />
 
       <div className="main-content" style={{ overflowY: 'auto' }}>
-        {/* Header */}
+
         <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 20px', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, background: 'rgba(8,8,16,0.9)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
           <button onClick={() => setSidebarOpen(true)} className="hide-desktop" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 6, display: 'flex', borderRadius: 'var(--r-sm)' }}>
             <Menu size={18} />
@@ -137,7 +137,7 @@ export default function Upgrade() {
         <div style={{ padding: 32 }}>
           <div style={{ maxWidth: 680, margin: '0 auto' }}>
 
-            {/* Hero */}
+
             <div style={{ textAlign: 'center', marginBottom: 36 }}>
               <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.04em', marginBottom: 8 }}>Unlock Full Power</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', maxWidth: 380, margin: '0 auto' }}>
@@ -145,10 +145,10 @@ export default function Upgrade() {
               </p>
             </div>
 
-            {/* Cards */}
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 28 }}>
 
-              {/* Free */}
+
               <div className="glass-card" style={{ padding: 22 }}>
                 <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 6 }}>FREE</p>
                 <p style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.04em' }}>₹0</p>
@@ -166,7 +166,7 @@ export default function Upgrade() {
                 }
               </div>
 
-              {/* Pro */}
+
               <div className="glass-card" style={{ padding: 22, borderColor: 'rgba(0,208,132,0.3)', background: 'rgba(0,208,132,0.03)', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)', background: 'var(--green)', color: '#000', fontSize: '0.68rem', fontWeight: 700, padding: '2px 12px', borderRadius: 100, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
                   MOST POPULAR
@@ -174,7 +174,7 @@ export default function Upgrade() {
 
                 <p style={{ fontSize: '0.68rem', color: 'var(--orange)', fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 10 }}>PRO</p>
 
-                {/* Billing Toggle */}
+
                 <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 8, padding: 3, marginBottom: 14, gap: 2 }}>
                   {[{ key: 'monthly', label: '1 MONTH' }, { key: 'annual', label: '1 YEAR' }].map(({ key, label }) => (
                     <button
@@ -193,7 +193,7 @@ export default function Upgrade() {
                   ))}
                 </div>
 
-                {/* Price */}
+
                 <div style={{ marginBottom: 2 }}>
                   <span style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.04em' }}>
                     ₹{isAnnual ? ANNUAL_PRICE : MONTHLY_PRICE}
@@ -221,7 +221,7 @@ export default function Upgrade() {
                   ))}
                 </div>
 
-                {/* ── Unified button — same style, label reflects billing ── */}
+
                 {isPro
                   ? <button disabled className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '9px', opacity: 0.6, cursor: 'default' }}>Current Plan</button>
                   : <button onClick={handleUpgradeClick} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '9px' }}>
@@ -236,7 +236,7 @@ export default function Upgrade() {
         </div>
       </div>
 
-      {/* ── Order Details Modal ── */}
+
       {showModal && (
         <div
           onClick={() => { if (!loading) setShowModal(false) }}
@@ -246,7 +246,7 @@ export default function Upgrade() {
             onClick={e => e.stopPropagation()}
             style={{ background: '#0e0e1a', border: '1px solid var(--border)', borderRadius: 16, width: '100%', maxWidth: 400, padding: 28, position: 'relative' }}
           >
-            {/* Modal Header */}
+
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
               <button
                 onClick={() => { if (!loading) setShowModal(false) }}
@@ -265,7 +265,7 @@ export default function Upgrade() {
             <h2 style={{ textAlign: 'center', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: 4 }}>Order Details</h2>
             <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.78rem', marginBottom: 20 }}>Review your order before payment</p>
 
-            {/* User info */}
+
             <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '14px 16px', marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 10, borderBottom: '1px solid var(--border)', marginBottom: 10 }}>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>Name</span>
@@ -277,7 +277,7 @@ export default function Upgrade() {
               </div>
             </div>
 
-            {/* Price Breakdown */}
+
             <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 10, borderBottom: '1px solid var(--border)', marginBottom: 10 }}>
                 <div>
@@ -313,7 +313,7 @@ export default function Upgrade() {
               Secured by Razorpay · Pay via Card, UPI, NetBanking &amp; more
             </p>
 
-            {/* ── Pay button — spinner lives HERE, not on upgrade page ── */}
+
             <button
               onClick={handleConfirmPay}
               disabled={loading}

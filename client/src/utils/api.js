@@ -7,14 +7,12 @@ const api = axios.create({
   withCredentials: false,
 })
 
-// Attach access token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken')
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
-// Track if a refresh is in progress to avoid race conditions
 let isRefreshing = false
 let failedQueue  = []
 
@@ -26,7 +24,6 @@ const processQueue = (error, token = null) => {
   failedQueue = []
 }
 
-// Auto-refresh on 401 TOKEN_EXPIRED
 api.interceptors.response.use(
   (res) => res,
   async (error) => {

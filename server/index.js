@@ -23,7 +23,6 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-// Serve uploaded files (avatars, docs)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 const globalLimiter = rateLimit({
@@ -45,10 +44,8 @@ app.use('/api/',              globalLimiter)
 app.use('/api/auth/login',    authLimiter)
 app.use('/api/auth/register', authLimiter)
 
-// Routes
 app.use('/api/auth',          require('./routes/auth'))
 app.use('/api/chat',          require('./routes/chat'))
-// Add this BEFORE app.use('/api/conversations', ...)
 const Conversation = require('./models/Conversation')
 
 app.get('/api/share/:shareToken', async (req, res) => {
@@ -79,7 +76,6 @@ app.use('/api/payment',       require('./routes/payment'))
 app.use('/api/analytics',     require('./routes/analytics'))
 app.use('/api/support',       require('./routes/support'))
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({
     status:    'ok',

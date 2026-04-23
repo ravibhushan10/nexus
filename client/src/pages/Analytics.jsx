@@ -60,7 +60,6 @@ export default function Analytics() {
       />
 
       <div className="main-content" style={{ overflowY: 'auto' }}>
-        {/* No bottom border */}
         <header style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--border)',gap: 12, padding: '9px 20px', background: 'rgba(8,8,16,0.9)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 10, flexShrink: 0 }}>
           <button onClick={() => setSidebarOpen(true)} className="hide-desktop" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 6, display: 'flex', borderRadius: 'var(--r-sm)' }}>
             <Menu size={18} />

@@ -4,7 +4,7 @@ const SidebarContext = createContext(null)
 
 export function SidebarProvider({ children }) {
   const [collapsed, setCollapsed] = useState(false)
-  const [open, setOpen] = useState(false) // mobile overlay
+  const [open, setOpen] = useState(false)
 
   return (
     <SidebarContext.Provider value={{ collapsed, setCollapsed, open, setOpen }}>

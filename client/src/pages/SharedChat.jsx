@@ -48,7 +48,7 @@ export default function SharedChat() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary, #080810)', display: 'flex', flexDirection: 'column' }}>
 
-      {/* ── Top bar ── */}
+
       <header style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '10px 20px',
@@ -56,7 +56,7 @@ export default function SharedChat() {
         borderBottom: '1px solid var(--border, rgba(255,255,255,0.07))',
         position: 'sticky', top: 0, zIndex: 10,
       }}>
-        {/* Logo */}
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 26, height: 26, background: 'linear-gradient(135deg,var(--purple,#9d6fff),#6b3fd4)', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 13 }}>N</div>
           <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary, #fff)' }}>NexusAI</span>
@@ -65,7 +65,7 @@ export default function SharedChat() {
           </span>
         </div>
 
-        {/* CTA */}
+
         <button
           onClick={() => navigate('/signup')}
           style={{
@@ -82,10 +82,10 @@ export default function SharedChat() {
         </button>
       </header>
 
-      {/* ── Conversation ── */}
+
       <main style={{ flex: 1, maxWidth: 740, width: '100%', margin: '0 auto', padding: '28px 16px 60px' }}>
 
-        {/* Title */}
+
         {conv?.title && conv.title !== 'New Conversation' && (
           <h1 style={{
             color: 'var(--text-primary, #fff)',
@@ -97,7 +97,7 @@ export default function SharedChat() {
           </h1>
         )}
 
-        {/* Messages */}
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {conv?.messages?.map((msg, i) => (
             <MessageBubble
@@ -110,7 +110,7 @@ export default function SharedChat() {
           ))}
         </div>
 
-        {/* Bottom CTA banner */}
+
         <div style={{
           marginTop: 48,
           padding: '20px 24px',

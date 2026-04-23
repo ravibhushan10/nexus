@@ -72,9 +72,8 @@ export default function Chat() {
   const [extractingDoc,  setExtractingDoc]  = useState(false)
   const [showAttachMenu, setShowAttachMenu] = useState(false)
 
-  // Share state
   const [showShareMenu,    setShowShareMenu]    = useState(false)
-  const [shareState,       setShareState]       = useState('idle') // 'idle' | 'confirm' | 'shared' | 'loading'
+  const [shareState,       setShareState]       = useState('idle')
   const [shareToken,       setShareToken]       = useState(null)
   const [shareUrl,         setShareUrl]         = useState('')
 
@@ -107,7 +106,6 @@ export default function Chat() {
     else        { resetChat() }
   }, [convId])
 
-  // Reset share state when conversation changes
   useEffect(() => {
     setShareState('idle')
     setShareToken(null)
@@ -156,7 +154,6 @@ export default function Chat() {
     }
   }
 
-  // ── Image attach — silent, no toast ───────────────────────────────────────
   const handleImageAttach = (e) => {
     const files = Array.from(e.target.files || [])
     setShowAttachMenu(false)
@@ -176,7 +173,6 @@ export default function Chat() {
     e.target.value = ''
   }
 
-  // ── Doc attach — silent, no toast ─────────────────────────────────────────
   const handleDocAttach = async (e) => {
     const files = Array.from(e.target.files || [])
     setShowAttachMenu(false)
@@ -214,7 +210,6 @@ export default function Chat() {
   const removeImage = (name) => setAttachedImages(prev => prev.filter(f => f.name !== name))
   const removeDoc   = (name) => setAttachedDocs(prev => prev.filter(f => f.name !== name))
 
-  // ── Send ───────────────────────────────────────────────────────────────────
   const handleSend = useCallback(async (text = input) => {
     if ((!text.trim() && attachedImages.length === 0 && attachedDocs.length === 0) || loading) return
     const msgText = text.trim()
@@ -256,10 +251,10 @@ export default function Chat() {
     sendMessage(lastUser.content)
   }, [messages, sendMessage, setMessages])
 
-  // ── Share logic ────────────────────────────────────────────────────────────
+
   const handleShareClick = () => {
     if (shareState === 'shared') {
-      // Already shared — just toggle the menu to show options
+
       setShowShareMenu(p => !p)
       return
     }
@@ -327,11 +322,11 @@ export default function Chat() {
   const isEmpty = messages.length === 0
   const currentModel = MODELS.find(m => m.id === selectedModel) || MODELS[0]
 
-  // ── Input box ──────────────────────────────────────────────────────────────
+
   const InputBox = (
     <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
 
-      {/* ── Main input card — Claude.ai style ── */}
+
       <div style={{
         background: 'var(--bg-card)',
         border: '1px solid var(--border)',
@@ -344,11 +339,11 @@ export default function Chat() {
         onBlurCapture={e  => { e.currentTarget.style.borderColor = 'var(--border)';       e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.2)' }}
       >
 
-        {/* ── Attachment previews INSIDE the card ── */}
+
         {(attachedImages.length > 0 || attachedDocs.length > 0 || extractingDoc) && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
 
-            {/* Image thumbnails */}
+
             {attachedImages.map(f => (
               <div key={f.name} style={{
                 position: 'relative', borderRadius: 8, overflow: 'hidden',
@@ -365,7 +360,7 @@ export default function Chat() {
               </div>
             ))}
 
-            {/* Doc pills */}
+
             {attachedDocs.map(f => (
               <div key={f.name} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
@@ -386,7 +381,7 @@ export default function Chat() {
               </div>
             ))}
 
-            {/* Extracting spinner */}
+
             {extractingDoc && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 6,
@@ -400,7 +395,7 @@ export default function Chat() {
           </div>
         )}
 
-        {/* ── Textarea — auto-grows, max 200px then scrolls ── */}
+
         <textarea
           ref={inputRef}
           value={input}
@@ -418,10 +413,10 @@ export default function Chat() {
           }}
         />
 
-        {/* ── Toolbar ── */}
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
 
-          {/* Attach */}
+
           <div style={{ position: 'relative' }} ref={attachMenuRef}>
             <button onClick={() => setShowAttachMenu(p => !p)} title="Attach"
               style={{
@@ -434,7 +429,7 @@ export default function Chat() {
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)';       e.currentTarget.style.color = 'var(--text-muted)' }}
             >
               <Paperclip size={14} />
-              {/* Badge showing count */}
+
               {(attachedImages.length + attachedDocs.length) > 0 && (
                 <span style={{
                   position: 'absolute', top: -5, right: -5,
@@ -488,13 +483,13 @@ export default function Chat() {
             <input ref={docFileRef} type="file" accept=".pdf,.txt,.md" multiple style={{ display: 'none' }} onChange={handleDocAttach} />
           </div>
 
-          {/* Model selector — silent vision auto-select */}
+
           <div style={{ position: 'relative' }} ref={modelMenuRef}>
             <button onClick={() => setShowModelMenu(p => !p)} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 8, background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.12s', whiteSpace: 'nowrap' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-light)'; e.currentTarget.style.color = 'var(--text-primary)' }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)';       e.currentTarget.style.color = 'var(--text-secondary)' }}
             >
-              {/* No "Vision (auto)" label — silently handled by backend */}
+
               {currentModel.label} <ChevronDown size={11} />
             </button>
 
@@ -530,7 +525,7 @@ export default function Chat() {
             )}
           </div>
 
-          {/* System prompt pill */}
+
           <button onClick={handleSystemPromptClick} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 8, border: `1px solid ${systemPromptActive && features.systemPrompt ? 'rgba(157,111,255,0.4)' : 'var(--border)'}`, background: systemPromptActive && features.systemPrompt ? 'rgba(157,111,255,0.08)' : 'transparent', color: systemPromptActive && features.systemPrompt ? 'var(--purple)' : 'var(--text-muted)', fontSize: '0.73rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap' }}>
             System Prompt
             <span style={{ padding: '1px 6px', borderRadius: 4, background: systemPromptActive && features.systemPrompt ? 'var(--purple)' : 'var(--border)', color: systemPromptActive && features.systemPrompt ? '#fff' : 'var(--text-muted)', fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.06em' }}>
@@ -540,7 +535,7 @@ export default function Chat() {
 
           <div style={{ flex: 1 }} />
 
-          {/* Stop / Send */}
+
           {streaming ? (
             <button onClick={stopStreaming} title="Stop" style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,92,92,0.1)', border: '1px solid rgba(255,92,92,0.3)', color: 'var(--red)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Square size={13} />
@@ -576,7 +571,7 @@ export default function Chat() {
       />
 
       <div className="main-content">
-        {/* Top bar */}
+
         <header style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'rgba(8,8,16,0.92)', backdropFilter: 'blur(12px)', flexShrink: 0, zIndex: 10, borderBottom: '1px solid var(--border)' }}>
           <button onClick={() => setSidebarOpen(true)} className="hide-desktop" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 6, display: 'flex', borderRadius: 8 }}>
             <Menu size={18} />
@@ -588,7 +583,7 @@ export default function Chat() {
             </div>
           </div>
 
-          {/* Share button — only shown when there are messages */}
+
           {messages.length > 0 && (
             <div style={{ position: 'relative' }} ref={shareMenuRef}>
               <button
@@ -658,7 +653,7 @@ export default function Chat() {
                         </div>
                       </div>
 
-                      {/* URL pill */}
+
                       <div style={{
                         display: 'flex', alignItems: 'center', gap: 6,
                         padding: '7px 10px', borderRadius: 8,
@@ -743,7 +738,7 @@ export default function Chat() {
               </div>
             </div>
 
-          
+
 
             {atLimit && (
               <div style={{ margin: '0 16px 8px', padding: '9px 16px', borderRadius: 10, background: 'var(--red-dim)', border: '1px solid rgba(255,92,92,0.2)', color: 'var(--red)', fontSize: '0.82rem', textAlign: 'center' }}>

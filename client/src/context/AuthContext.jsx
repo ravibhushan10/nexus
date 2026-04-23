@@ -33,14 +33,14 @@ useEffect(() => {
   return () => window.removeEventListener('auth:logout', handler)
 }, [])
 
-  // Standard email/password login
+
   const login = (userData, accessToken, refreshToken) => {
     localStorage.setItem('accessToken',  accessToken)
     localStorage.setItem('refreshToken', refreshToken)
     setUser(userData)
   }
 
-  // OAuth login — called from useOAuth hook after Firebase success
+
   const oauthLogin = useCallback(async (profile) => {
     const { data } = await api.post('/auth/oauth', profile)
     localStorage.setItem('accessToken',  data.accessToken)

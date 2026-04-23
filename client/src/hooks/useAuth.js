@@ -64,7 +64,7 @@ export function useOAuth() {
   }
   try {
     const provider = new GoogleAuthProvider()
-    provider.addScope('email')           // ← explicitly request email scope
+    provider.addScope('email')
     provider.addScope('profile')
     provider.setCustomParameters({ prompt: 'select_account' })
 
@@ -72,7 +72,7 @@ export function useOAuth() {
     const credential = GoogleAuthProvider.credentialFromResult(result)
     const u          = result.user
 
-    // Get email from every possible source
+
     const email =
       u.email ||
       u.providerData?.[0]?.email ||

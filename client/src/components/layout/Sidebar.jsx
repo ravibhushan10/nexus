@@ -15,7 +15,6 @@ const NAV = [
   { icon: BarChart2, label: 'Analytics', path: '/analytics' },
 ]
 
-/* ── Same tooltip style as MessageBubble — dark box, right side for sidebar ── */
 function SidebarTooltip({ label, show }) {
   if (!label) return null
   return (
@@ -44,7 +43,6 @@ function SidebarTooltip({ label, show }) {
   )
 }
 
-/* ── Collapsed sidebar icon button with tooltip ── */
 function CollapsedBtn({ onClick, tooltip, children, active, style: extraStyle }) {
   const [hov, setHov] = useState(false)
   return (
@@ -140,9 +138,6 @@ const Sidebar = forwardRef(function Sidebar(
   const pinned   = filtered.filter(c => c.isPinned)
   const recent   = filtered.filter(c => !c.isPinned)
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // COLLAPSED SIDEBAR — all icons have tooltips
-  // ─────────────────────────────────────────────────────────────────────────
   if (collapsed) {
     return (
       <aside style={{
@@ -155,15 +150,13 @@ const Sidebar = forwardRef(function Sidebar(
         paddingTop: 10, paddingBottom: 10,
         gap: 2, zIndex: 40,
         position: 'relative',
-        overflow: 'visible',   // let tooltips escape the sidebar
+        overflow: 'visible',
       }}>
 
-        {/* Expand */}
         <CollapsedBtn onClick={onToggleCollapse} tooltip="Expand sidebar" style={{ marginBottom: 4 }}>
           <PanelLeftOpen size={16} />
         </CollapsedBtn>
 
-        {/* New Chat */}
         <CollapsedBtn
           onClick={() => navigate('/chat')}
           tooltip="New Chat"
@@ -175,7 +168,6 @@ const Sidebar = forwardRef(function Sidebar(
           <Plus size={15} />
         </CollapsedBtn>
 
-        {/* Nav icons */}
         {NAV.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname.startsWith(path)
           return (
@@ -193,7 +185,6 @@ const Sidebar = forwardRef(function Sidebar(
 
         <div style={{ flex: 1 }} />
 
-        {/* Profile popup — appears above avatar */}
         {profileOpen && (
           <div
             onClick={e => e.stopPropagation()}
@@ -250,7 +241,6 @@ const Sidebar = forwardRef(function Sidebar(
           </div>
         )}
 
-        {/* Avatar with tooltip */}
        <CollapsedBtn
   onClick={e => { e.stopPropagation(); setProfileOpen(p => !p) }}
   tooltip="Profile"
@@ -274,9 +264,6 @@ const Sidebar = forwardRef(function Sidebar(
     )
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // EXPANDED SIDEBAR — unchanged
-  // ─────────────────────────────────────────────────────────────────────────
   return (
     <>
       {open && (
@@ -293,7 +280,6 @@ const Sidebar = forwardRef(function Sidebar(
         transform: open ? 'translateX(0)' : 'translateX(-100%)',
       }}>
 
-        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', flexShrink: 0 }}>
           <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>NexusAI</span>
           <div style={{ display: 'flex', gap: 4 }}>
@@ -310,7 +296,6 @@ const Sidebar = forwardRef(function Sidebar(
           </div>
         </div>
 
-        {/* Navigation */}
         <nav style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
           <button onClick={handleNew} className="sidebar-item" style={{ color: 'var(--text-secondary)' }}>
             <Plus size={14} /> New Chat
@@ -325,7 +310,6 @@ const Sidebar = forwardRef(function Sidebar(
           })}
         </nav>
 
-        {/* Search */}
         <div style={{ padding: '8px 12px 4px' }}>
           <div style={{ position: 'relative' }}>
             <Search size={12} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
@@ -334,7 +318,6 @@ const Sidebar = forwardRef(function Sidebar(
           </div>
         </div>
 
-        {/* Conversations list */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '4px 12px 8px', display: 'flex', flexDirection: 'column', gap: 1 }} className="no-scrollbar">
           {pinned.length > 0 && (
             <>
@@ -374,7 +357,6 @@ const Sidebar = forwardRef(function Sidebar(
           )}
         </div>
 
-        {/* Usage meter */}
         <div style={{ margin: '0 12px 10px', padding: '10px 12px', borderRadius: 'var(--r-md)', background: 'var(--bg-card)', border: '1px solid var(--border)', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: 6 }}>
             <span style={{ color: 'var(--text-muted)' }}>Daily usage</span>
@@ -455,7 +437,6 @@ const Sidebar = forwardRef(function Sidebar(
 
 export default Sidebar
 
-// ─────────────────────────────────────────────────────────────────────────────
 function ConvItem({ c, activeConvId, onSelect, onMenu, menuId, onEdit, editing, editTitle, onEditChange, onEditSave, onEditCancel, onDelete, onPin }) {
   const isActive = activeConvId === c._id
   if (editing) {

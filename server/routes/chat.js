@@ -9,19 +9,19 @@ const { sendLimitReachedEmail } = require('../utils/sendEmail')
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
-// ── Model lists ───────────────────────────────────────────────────────────────
+
 const FREE_MODELS        = ['llama-3.1-8b-instant', 'gemma2-9b-it', 'qwen/qwen3-32b']
 const PRO_MODELS         = ['llama-3.3-70b-versatile']
 const ALL_MODELS         = [...FREE_MODELS, ...PRO_MODELS]
 const DEFAULT_FREE_MODEL = 'llama-3.1-8b-instant'
 const DEFAULT_PRO_MODEL  = 'llama-3.3-70b-versatile'
 
-// Free Groq vision model — auto-selected when user attaches images
+
 const VISION_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct'
 
 const DEFAULT_SYSTEM = `You are NexusAI, a highly capable AI assistant powered by Groq's ultra-fast inference engine. Be helpful, accurate, and concise. Format responses using clean markdown when appropriate — use code blocks for code, bullet points for lists, and headers for long structured responses.`
 
-// ─── Always return a plain string — fixes the 400 "content must be a string" ──
+
 function normaliseToString(content) {
   if (typeof content === 'string') return content
   if (Array.isArray(content)) {
@@ -30,9 +30,9 @@ function normaliseToString(content) {
   return String(content ?? '')
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/chat/send
-// ─────────────────────────────────────────────────────────────────────────────
+
+
+
 router.post('/send', protect, async (req, res) => {
   try {
     const {
@@ -41,8 +41,8 @@ router.post('/send', protect, async (req, res) => {
       memoryEnabled = true,
       systemPrompt  = '',
       model: requestedModel,
-      images = [],  // [{ mimeType: 'image/png', data: '<base64 string>' }]
-      docs   = [],  // [{ name: 'report.pdf',   text: '<extracted plain text>' }]
+      images = [],
+      docs   = [],
     } = req.body
 
     if (!message?.trim())
@@ -60,9 +60,9 @@ router.post('/send', protect, async (req, res) => {
       })
     }
 
-    // ── Model selection ───────────────────────────────────────────────────────
-    // Images present → auto-switch to vision model (free, no plan check needed)
-    // Otherwise → honour requested model with plan enforcement
+
+
+
     let selectedModel
     if (images.length > 0) {
       selectedModel = VISION_MODEL
@@ -76,7 +76,7 @@ router.post('/send', protect, async (req, res) => {
       selectedModel = user.plan === 'pro' ? DEFAULT_PRO_MODEL : DEFAULT_FREE_MODEL
     }
 
-    // ── Load or create conversation ───────────────────────────────────────────
+
     let conversation
     if (conversationId) {
       conversation = await Conversation.findOne({ _id: conversationId, userId: user._id })
@@ -88,7 +88,7 @@ router.post('/send', protect, async (req, res) => {
       })
     }
 
-    // ── System prompt ─────────────────────────────────────────────────────────
+
     let sysContent = systemPrompt?.trim()
       || conversation.systemPrompt?.trim()
       || user.systemPrompt?.trim()
@@ -106,9 +106,9 @@ if (user.language === 'pa') {
       sysContent += `\n\nWhat you know about this user:\n${memLines}`
     }
 
-    // ── Inject document text ──────────────────────────────────────────────────
-    // Text is extracted on the frontend and sent here as plain strings.
-    // We inject into the system prompt so every model (not just vision) can use it.
+
+
+
     if (docs.length > 0) {
       const docBlock = docs
         .map(d => `### Document: ${d.name}\n${d.text.slice(0, 8000)}`)
@@ -116,10 +116,10 @@ if (user.language === 'pa') {
       sysContent += `\n\n---\nThe user has attached document(s). Use them to answer accurately:\n\n${docBlock}`
     }
 
-    // ── Build history ─────────────────────────────────────────────────────────
-    // CRITICAL: always normalise content to string.
-    // This is what causes messages[N].content must be a string — if any old
-    // message was ever stored with array content, this collapses it to text.
+
+
+
+
     const historyMessages = conversation.messages
       .slice(-20)
       .map(m => ({
@@ -127,9 +127,9 @@ if (user.language === 'pa') {
         content: normaliseToString(m.content),
       }))
 
-    // ── Build the new user message ────────────────────────────────────────────
-    // Multimodal array only for the CURRENT message when images are present.
-    // History is always plain strings (see above).
+
+
+
     let userMessageContent
     if (images.length > 0) {
       userMessageContent = [
@@ -149,13 +149,13 @@ if (user.language === 'pa') {
       { role: 'user', content: userMessageContent },
     ]
 
-    // ── Save user message as PLAIN STRING in DB (never as array) ─────────────
+
     conversation.messages.push({ role: 'user', content: message, type: 'text' })
     if (conversation.messages.filter(m => m.role === 'user').length === 1) {
       conversation.generateTitle()
     }
 
-    // ── SSE setup ─────────────────────────────────────────────────────────────
+
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
     res.setHeader('Connection', 'keep-alive')
@@ -218,7 +218,7 @@ if (user.language === 'pa') {
   }
 })
 
-// POST /api/chat/suggestions
+
 router.post('/suggestions', protect, async (req, res) => {
   try {
     const { lastMessage, conversationContext = '' } = req.body
@@ -248,7 +248,7 @@ router.post('/suggestions', protect, async (req, res) => {
   }
 })
 
-// POST /api/chat/memory
+
 router.post('/memory', protect, async (req, res) => {
   try {
     const { key, value } = req.body
@@ -262,7 +262,7 @@ router.post('/memory', protect, async (req, res) => {
   } catch { res.status(500).json({ message: 'Server error' }) }
 })
 
-// DELETE /api/chat/memory/:key
+
 router.delete('/memory/:key', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
@@ -272,7 +272,7 @@ router.delete('/memory/:key', protect, async (req, res) => {
   } catch { res.status(500).json({ message: 'Server error' }) }
 })
 
-// POST /api/chat/templates
+
 router.post('/templates', protect, async (req, res) => {
   try {
     const { title, content } = req.body
@@ -284,7 +284,7 @@ router.post('/templates', protect, async (req, res) => {
   } catch { res.status(500).json({ message: 'Server error' }) }
 })
 
-// DELETE /api/chat/templates/:id
+
 router.delete('/templates/:id', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id)

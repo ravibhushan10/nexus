@@ -5,13 +5,13 @@ const { protect } = require('../middleware/auth')
 const User        = require('../models/User')
 const Payment     = require('../models/Payment')
 
-// Pricing (in paise)
+
 const PRICES = {
-  monthly: 1000,   // ₹10
-  annual:  5000,  // ₹50
+  monthly: 1000,
+  annual:  5000,
 }
 
-// Lazy-load Razorpay
+
 let razorpay
 const getRazorpay = () => {
   if (!razorpay) {
@@ -27,7 +27,7 @@ const getRazorpay = () => {
   return razorpay
 }
 
-// POST /api/payment/create-order
+
 router.post('/create-order', protect, async (req, res) => {
   try {
     if (req.user.plan === 'pro') {
@@ -36,7 +36,7 @@ router.post('/create-order', protect, async (req, res) => {
 
     const { plan = 'pro', billing = 'monthly' } = req.body
 
-    // Validate billing cycle
+
     if (!['monthly', 'annual'].includes(billing)) {
       return res.status(400).json({ message: 'Invalid billing cycle' })
     }
@@ -56,7 +56,7 @@ router.post('/create-order', protect, async (req, res) => {
       razorpayOrderId: order.id,
       amount,
       plan,
-      billing,   // store billing cycle
+      billing,
       receipt,
     })
 
@@ -73,7 +73,7 @@ router.post('/create-order', protect, async (req, res) => {
   }
 })
 
-// POST /api/payment/verify
+
 router.post('/verify', protect, async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body
@@ -81,7 +81,7 @@ router.post('/verify', protect, async (req, res) => {
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature)
       return res.status(400).json({ message: 'Missing payment fields' })
 
-    // Verify HMAC signature
+
     const body     = `${razorpay_order_id}|${razorpay_payment_id}`
     const expected = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -91,13 +91,13 @@ router.post('/verify', protect, async (req, res) => {
     if (expected !== razorpay_signature)
       return res.status(400).json({ message: 'Payment verification failed — invalid signature' })
 
-    // Mark payment as paid
+
     await Payment.findOneAndUpdate(
       { razorpayOrderId: razorpay_order_id },
       { razorpayPaymentId: razorpay_payment_id, razorpaySignature: razorpay_signature, status: 'paid' }
     )
 
-    // Upgrade user
+
     await User.findByIdAndUpdate(req.user._id, {
       plan: 'pro',
       'razorpay.paymentId': razorpay_payment_id,
@@ -110,7 +110,7 @@ router.post('/verify', protect, async (req, res) => {
   }
 })
 
-// GET /api/payment/history
+
 router.get('/history', protect, async (req, res) => {
   try {
     const payments = await Payment.find({ userId: req.user._id, status: 'paid' })
@@ -122,7 +122,7 @@ router.get('/history', protect, async (req, res) => {
   }
 })
 
-// POST /api/payment/downgrade
+
 router.post('/downgrade', protect, async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.user._id, { plan: 'free' })

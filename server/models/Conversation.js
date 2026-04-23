@@ -31,7 +31,7 @@ const conversationSchema = new mongoose.Schema({
   isDeleted:   { type: Boolean, default: false },
   folder:      { type: String, default: '' },
 
-  // ── Share fields ────────────────────────────────────────────────────────
+
   isPublic:   { type: Boolean, default: false },
   shareToken: { type: String,  default: null, index: true, sparse: true },
 
@@ -44,7 +44,7 @@ conversationSchema.methods.generateTitle = function () {
   }
 }
 
-// Generate a cryptographically random share token
+
 conversationSchema.methods.generateShareToken = function () {
   this.shareToken = crypto.randomBytes(24).toString('hex')
   this.isPublic   = true

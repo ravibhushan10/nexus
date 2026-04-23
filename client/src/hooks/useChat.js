@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext'
 import api from '../utils/api'
 import toast from 'react-hot-toast'
 
-// How often (ms) to flush buffered tokens into state.
-// 30ms ≈ 33 renders/sec — smooth without thrashing the DOM.
+
+
 const FLUSH_INTERVAL_MS = 30
 
 export function useChat({ sidebarRef }) {
@@ -23,21 +23,21 @@ export function useChat({ sidebarRef }) {
   const setSystemPrompt = () => {}
 
   const abortRef    = useRef(null)
-  // Token buffer: incoming tokens from SSE accumulate here between flushes
+
   const bufferRef   = useRef('')
-  // Full content built so far (used for final save & return value)
+
   const fullRef     = useRef('')
   const timerRef    = useRef(null)
   const doneDataRef = useRef(null)
 
-  // ── Flush buffer into React state on a fixed interval ──────────────────────
-  // Instead of one setState per character (old approach) or per token,
-  // we batch everything that arrived in the last FLUSH_INTERVAL_MS together.
-  // This gives smooth visible progress without hammering React.
+
+
+
+
   const startFlushing = useCallback((aiMsgId) => {
     if (timerRef.current) return
     timerRef.current = setInterval(() => {
-      // Drain the buffer
+
       if (bufferRef.current.length > 0) {
         fullRef.current += bufferRef.current
         bufferRef.current = ''
@@ -47,7 +47,7 @@ export function useChat({ sidebarRef }) {
         )
       }
 
-      // If stream finished and buffer is now empty → finalise
+
       if (doneDataRef.current && bufferRef.current.length === 0) {
         clearInterval(timerRef.current)
         timerRef.current = null
@@ -72,7 +72,7 @@ export function useChat({ sidebarRef }) {
     doneDataRef.current = null
   }, [])
 
-  // ── Load conversation ──────────────────────────────────────────────────────
+
   const loadConversation = useCallback(async (id) => {
     setLoadingConv(true)
     try {
@@ -96,13 +96,13 @@ export function useChat({ sidebarRef }) {
     setFeatures({ memory: true, systemPrompt: false })
   }, [])
 
-  // ── Send message ───────────────────────────────────────────────────────────
+
   const sendMessage = useCallback(async (
     text,
     overrideConvId,
     { model, images = [], docs = [] } = {}
-    //                    ^^^^^^^^^^
-    // docs: [{ name, text }] — plain-text extracted on the frontend
+
+
   ) => {
     if (!text?.trim() || loading) return
 
@@ -138,7 +138,7 @@ export function useChat({ sidebarRef }) {
         systemPrompt:   features.systemPrompt ? systemPrompt : '',
         ...(model             ? { model }  : {}),
         ...(images.length > 0 ? { images } : {}),
-        ...(docs.length   > 0 ? { docs }   : {}),  // ← forward docs to backend
+        ...(docs.length   > 0 ? { docs }   : {}),
       }
 
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/chat/send`, {
@@ -171,7 +171,7 @@ export function useChat({ sidebarRef }) {
           try {
             const json = JSON.parse(line.slice(6))
             if (json.type === 'delta') {
-              // Append to buffer — flushed on next interval tick
+
               bufferRef.current += json.content
             } else if (json.type === 'done') {
               if (!convId && json.conversationId) {
@@ -200,7 +200,7 @@ export function useChat({ sidebarRef }) {
       setMessages(prev => prev.filter(m => m._id !== aiMsgId))
     } finally {
       setLoading(false)
-      // Wait until the flush timer has fully drained before clearing streaming flag
+
       const waitForDrain = setInterval(() => {
         if (bufferRef.current.length === 0 && !doneDataRef.current) {
           clearInterval(waitForDrain)

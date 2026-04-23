@@ -79,7 +79,7 @@ function AccordionItem({ q, a }) {
   )
 }
 
-// Validation rules in order — first failing rule is shown
+
 const RULES = [
   { field: 'name',    check: v => v.trim().length < 3,            msg: 'Name must be at least 3 characters' },
   { field: 'email',   check: v => !/\S+@\S+\.\S+/.test(v.trim()), msg: 'Enter a valid email address' },
@@ -101,14 +101,14 @@ export default function Help() {
   const navigate   = useNavigate()
 
   const [form,    setForm]    = useState({ name: '', email: '', category: 'General', subject: '', message: '' })
-  const [error,   setError]   = useState({ field: '', msg: '' })   // single error at a time
+  const [error,   setError]   = useState({ field: '', msg: '' })
   const [sending, setSending] = useState(false)
   const [sent,    setSent]    = useState(false)
 
 const handleChange = (field, value) => {
   const newForm = { ...form, [field]: value }
   setForm(newForm)
-  // Only clear error if the user fixed the currently shown error field
+
   if (error.field === field) {
     const firstError = getFirstError(newForm)
     if (!firstError || firstError.field !== field) {
@@ -162,14 +162,14 @@ const borderColor = (field) => {
         <div style={{ flex: 1, overflowY: 'auto', padding: '32px 20px' }}>
           <div style={{ maxWidth: 680, margin: '0 auto' }}>
 
-            {/* Hero */}
+
             <div style={{ textAlign: 'center', marginBottom: 40 }}>
 
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 8px' }}>How can we help?</h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Browse the FAQ or send us a message below</p>
             </div>
 
-            {/* FAQ Groups */}
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 40 }}>
               {FAQ_GROUPS.map(({ icon: Icon, color, bg, border, label, items }) => (
                 <div key={label} style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', borderRadius: 'var(--r-lg)', overflow: 'hidden' }}>
@@ -183,7 +183,7 @@ const borderColor = (field) => {
               ))}
             </div>
 
-            {/* Contact Form */}
+
             <div style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', borderRadius: 'var(--r-lg)', padding: 28 }}>
 
               <p style={{ fontSize: '0.62rem', color: 'var(--green)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)', marginBottom: 20, borderBottom: '1px solid var(--border)', paddingBottom: 14 }}>
@@ -209,7 +209,7 @@ const borderColor = (field) => {
               ) : (
                 <div>
 
-                  {/* Name + Email */}
+
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
                     <div>
                       <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)', display: 'block', marginBottom: 6 }}>
@@ -244,7 +244,7 @@ const borderColor = (field) => {
                     </div>
                   </div>
 
-                  {/* Category */}
+
                   <div style={{ marginBottom: 16 }}>
                     <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)', display: 'block', marginBottom: 6 }}>
                       Category
@@ -265,7 +265,7 @@ const borderColor = (field) => {
                     </select>
                   </div>
 
-                  {/* Subject */}
+
                   <div style={{ marginBottom: 16 }}>
                     <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)', display: 'block', marginBottom: 6 }}>
                       Subject <span style={{ color: '#ff5555' }}>*</span>
@@ -282,7 +282,7 @@ const borderColor = (field) => {
                     )}
                   </div>
 
-                  {/* Message */}
+
                   <div style={{ marginBottom: 20 }}>
                     <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)', display: 'block', marginBottom: 6 }}>
                       Message <span style={{ color: '#ff5555' }}>*</span>
@@ -304,7 +304,7 @@ const borderColor = (field) => {
                     </div>
                   </div>
 
-                  {/* Submit */}
+
                   <button
                     onClick={handleSubmit}
                     disabled={sending}

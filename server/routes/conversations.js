@@ -3,7 +3,7 @@ const router       = express.Router()
 const { protect }  = require('../middleware/auth')
 const Conversation = require('../models/Conversation')
 
-// GET /api/conversations
+
 router.get('/', protect, async (req, res) => {
   try {
     const conversations = await Conversation.find({ userId: req.user._id, isDeleted: false })
@@ -16,7 +16,7 @@ router.get('/', protect, async (req, res) => {
   }
 })
 
-// GET /api/conversations/:id
+
 router.get('/:id', protect, async (req, res) => {
   try {
     const conversation = await Conversation.findOne({
@@ -31,15 +31,15 @@ router.get('/:id', protect, async (req, res) => {
   }
 })
 
-// ── PUBLIC share endpoint — NO auth required ──────────────────────────────────
-// GET /api/share/:shareToken
+
+
 router.get('/public/:shareToken', async (req, res) => {
   try {
     const conversation = await Conversation.findOne({
       shareToken: req.params.shareToken,
       isPublic:   true,
       isDeleted:  false,
-    }).select('title messages createdAt updatedAt')  // never expose userId or cost
+    }).select('title messages createdAt updatedAt')
 
     if (!conversation) return res.status(404).json({ message: 'Conversation not found or link disabled.' })
 
@@ -57,8 +57,8 @@ router.get('/public/:shareToken', async (req, res) => {
   }
 })
 
-// ── Enable sharing — generates token if not present ──────────────────────────
-// POST /api/conversations/:id/share
+
+
 router.post('/:id/share', protect, async (req, res) => {
   try {
     const conversation = await Conversation.findOne({
@@ -68,7 +68,7 @@ router.post('/:id/share', protect, async (req, res) => {
     })
     if (!conversation) return res.status(404).json({ message: 'Not found' })
 
-    // Re-use existing token if already shared
+
     if (!conversation.shareToken) {
       conversation.generateShareToken()
     } else {
@@ -82,8 +82,8 @@ router.post('/:id/share', protect, async (req, res) => {
   }
 })
 
-// ── Disable sharing — keeps token in DB but sets isPublic = false ─────────────
-// POST /api/conversations/:id/unshare
+
+
 router.post('/:id/unshare', protect, async (req, res) => {
   try {
     const conversation = await Conversation.findOneAndUpdate(
@@ -98,7 +98,7 @@ router.post('/:id/unshare', protect, async (req, res) => {
   }
 })
 
-// PUT /api/conversations/:id/rename
+
 router.put('/:id/rename', protect, async (req, res) => {
   try {
     const { title } = req.body
@@ -115,7 +115,7 @@ router.put('/:id/rename', protect, async (req, res) => {
   }
 })
 
-// PUT /api/conversations/:id/pin
+
 router.put('/:id/pin', protect, async (req, res) => {
   try {
     const conversation = await Conversation.findOne({ _id: req.params.id, userId: req.user._id })
@@ -128,7 +128,7 @@ router.put('/:id/pin', protect, async (req, res) => {
   }
 })
 
-// PUT /api/conversations/:id/folder
+
 router.put('/:id/folder', protect, async (req, res) => {
   try {
     const { folder } = req.body
@@ -144,7 +144,7 @@ router.put('/:id/folder', protect, async (req, res) => {
   }
 })
 
-// PUT /api/conversations/:id/system-prompt
+
 router.put('/:id/system-prompt', protect, async (req, res) => {
   try {
     const { systemPrompt } = req.body
@@ -160,7 +160,7 @@ router.put('/:id/system-prompt', protect, async (req, res) => {
   }
 })
 
-// DELETE /api/conversations/:id
+
 router.delete('/:id', protect, async (req, res) => {
   try {
     const conversation = await Conversation.findOneAndUpdate(
@@ -174,7 +174,7 @@ router.delete('/:id', protect, async (req, res) => {
   }
 })
 
-// DELETE /api/conversations  — delete all
+
 router.delete('/', protect, async (req, res) => {
   try {
     await Conversation.updateMany({ userId: req.user._id }, { isDeleted: true })

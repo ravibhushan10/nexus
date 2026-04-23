@@ -84,7 +84,6 @@ function SectionHead({ title, sub }) {
   )
 }
 
-// ── Profile Tab — with avatar upload ────────────────────────────────────────
 function ProfileTab({ user, updateUser }) {
   const [name,          setName]          = useState(user?.name || '')
   const [saving,        setSaving]        = useState(false)
@@ -131,9 +130,8 @@ function ProfileTab({ user, updateUser }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <SectionHead title="Profile" sub="Manage your personal information" />
 
-      {/* Avatar + info card */}
       <div style={{ ...card, display: 'flex', alignItems: 'center', gap: 16 }}>
-        {/* Avatar with upload overlay */}
+
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <div style={{
             width: 60, height: 60, borderRadius: '50%',
@@ -199,12 +197,10 @@ function ProfileTab({ user, updateUser }) {
   )
 }
 
-// ── System Prompt Tab — FIXED: saves to MongoDB, not localStorage ────────────
 function SystemPromptTab({ user, updateUser }) {
   const [systemPrompt, setSystemPrompt] = useState(user?.systemPrompt || '')
   const [saving,       setSaving]       = useState(false)
 
-  // Sync if user object updates
   useEffect(() => { setSystemPrompt(user?.systemPrompt || '') }, [user?.systemPrompt])
 
   const savePrompt = async () => {
@@ -226,7 +222,6 @@ function SystemPromptTab({ user, updateUser }) {
     } catch { toast.error('Failed to reset') }
   }
 
-  // AI Memory
   const [memories,  setMemories] = useState(user?.memory || [])
   const [adding,    setAdding]   = useState(false)
   const [newKey,    setNewKey]   = useState('')
@@ -284,7 +279,7 @@ function SystemPromptTab({ user, updateUser }) {
         </div>
       </div>
 
-      {/* AI Memory */}
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <p style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)' }}>AI Memory</p>

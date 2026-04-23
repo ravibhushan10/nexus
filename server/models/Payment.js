@@ -5,10 +5,10 @@ const paymentSchema = new mongoose.Schema({
   razorpayOrderId:   { type: String, required: true },
   razorpayPaymentId: { type: String, default: '' },
   razorpaySignature: { type: String, default: '' },
-  amount:            { type: Number, required: true }, // in paise
+  amount:            { type: Number, required: true },
   currency:          { type: String, default: 'INR' },
   plan:              { type: String, enum: ['pro'], required: true },
-  billing:           { type: String, enum: ['monthly', 'annual'], default: 'monthly' }, // ← NEW
+  billing:           { type: String, enum: ['monthly', 'annual'], default: 'monthly' },
   status:            { type: String, enum: ['created', 'paid', 'failed'], default: 'created' },
   receipt:           { type: String, required: true },
 }, { timestamps: true })
